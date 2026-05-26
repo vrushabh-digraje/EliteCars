@@ -45,11 +45,20 @@ public class RegisterServlet extends HttpServlet {
 
         user.setRole(role);
 
-        UserDAO dao =
-                new UserDAO();
+        java.sql.Connection testCon = null;
+        try {
+            testCon = com.org.db.DBConnection.getConnection();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-        boolean status =
-                dao.registerUser(user);
+        if (testCon == null) {
+            response.sendRedirect("pages/register.html?error=db");
+            return;
+        }
+
+        UserDAO dao = new UserDAO();
+        boolean status = dao.registerUser(user);
 
         response.setContentType("text/html");
 
@@ -191,6 +200,7 @@ public class RegisterServlet extends HttpServlet {
         	"<div class='success-box'>"
 
         	+
+
         	"<i class='bi bi-check-circle-fill text-success' style='font-size:90px;'></i>"
 
         	+
@@ -199,7 +209,7 @@ public class RegisterServlet extends HttpServlet {
 
         	+
 
-        	"<p>Welcome to CarRental</p>"
+        	"<p>Welcome to EliteCars</p>"
 
         	+
 
@@ -229,11 +239,7 @@ public class RegisterServlet extends HttpServlet {
 
         	}else {
 
-            response.getWriter().println(
-
-            "<h2>Registration Failed</h2>"
-
-            );
+            response.sendRedirect("pages/register.html?error=duplicate");
 
         }
     }
