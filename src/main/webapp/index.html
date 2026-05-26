@@ -1,0 +1,1935 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>
+        (function() {
+            const theme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', theme);
+        })();
+    </script>
+    <meta charset="UTF-8">
+    <title>EliteCars - Premium Elite Carss</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- CDNs -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-primary: #06070a; /* Midnight Obsidian */
+            --bg-secondary: #0d0e15; /* Carbon Deep Slate */
+            --bg-glass: rgba(255, 255, 255, 0.03);
+            --border-glass: rgba(255, 255, 255, 0.06);
+            --accent-indigo: #6366f1; /* Electric Indigo */
+            --accent-cyan: #06b6d4; /* Cyber Cyan */
+            --accent-indigo-hover: #4f46e5;
+            --accent-cyan-hover: #0891b2;
+            --text-main: #f8fafc; /* Slate-50 */
+            --text-muted: #94a3b8; /* Slate-400 */
+            --font-display: 'Plus Jakarta Sans', sans-serif;
+            --font-sans: 'Inter', sans-serif;
+            --navbar-bg: rgba(6, 7, 10, 0.85);
+            --shadow-glow: rgba(6, 182, 212, 0.15);
+        }
+
+        [data-theme="light"] {
+            --bg-primary: #f8fafc; /* Slate-50 */
+            --bg-secondary: #ffffff; /* White */
+            --bg-glass: rgba(0, 0, 0, 0.02);
+            --border-glass: rgba(0, 0, 0, 0.08);
+            --accent-indigo: #4f46e5; /* Indigo-600 */
+            --accent-cyan: #0891b2; /* Cyan-600 */
+            --accent-indigo-hover: #4338ca;
+            --accent-cyan-hover: #0e7490;
+            --text-main: #0f172a; /* Slate-900 */
+            --text-muted: #475569; /* Slate-600 */
+            --navbar-bg: rgba(248, 250, 252, 0.85);
+            --shadow-glow: rgba(79, 70, 229, 0.08);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--bg-primary);
+            color: var(--text-main);
+            overflow-x: hidden;
+            transition: background-color 0.4s ease, color 0.4s ease;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: var(--font-display);
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .text-muted {
+            color: var(--text-muted) !important;
+        }
+
+        /* Ambient Glow Spheres */
+        .glow-sphere {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.6;
+        }
+        .glow-sphere-1 {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%);
+            top: 10%;
+            right: 5%;
+        }
+        .glow-sphere-2 {
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(6, 182, 212, 0.1) 0%, transparent 70%);
+            bottom: 20%;
+            left: -10%;
+        }
+
+        /* Glassmorphic Navbar */
+        .navbar {
+            background: var(--navbar-bg) !important;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-glass);
+            padding: 18px 0;
+            transition: all 0.3s ease;
+        }
+        
+        .navbar-brand {
+            font-size: 26px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, var(--text-main) 40%, var(--accent-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .navbar-brand span {
+            color: var(--accent-cyan);
+            -webkit-text-fill-color: var(--accent-cyan);
+        }
+
+        .nav-link {
+            color: var(--text-muted) !important;
+            font-weight: 500;
+            margin-left: 24px;
+            position: relative;
+            transition: all 0.3s ease;
+            padding: 6px 0;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent-indigo), var(--accent-cyan));
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+
+        .nav-link:hover::after, .nav-link.active::after {
+            width: 80%;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--text-main) !important;
+        }
+
+        /* Indigo-Cyan Gradient CTA Button */
+        .btn-gold {
+            background: linear-gradient(135deg, var(--accent-indigo), var(--accent-cyan));
+            color: #ffffff !important;
+            font-weight: 600;
+            border: none;
+            border-radius: 30px;
+            padding: 10px 26px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px var(--shadow-glow);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+        .btn-gold::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: all 0.6s ease;
+            z-index: -1;
+        }
+        .btn-gold:hover::before {
+            left: 100%;
+        }
+        .btn-gold:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(6, 182, 212, 0.4);
+            background: linear-gradient(135deg, var(--accent-indigo-hover), var(--accent-cyan-hover));
+        }
+
+        /* Hero Section Split Layout */
+        .hero {
+            position: relative;
+            min-height: 90vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle at top right, rgba(99, 102, 241, 0.08), transparent 45%),
+                        radial-gradient(circle at bottom left, rgba(6, 182, 212, 0.04), transparent 40%),
+                        var(--bg-primary);
+            padding: 80px 0 120px 0;
+            overflow: hidden;
+        }
+
+        .hero-row {
+            align-items: center;
+            width: 100%;
+        }
+
+        .hero-text-col {
+            padding-right: 40px;
+            z-index: 2;
+        }
+
+        .hero h1 {
+            font-size: clamp(42px, 5.5vw, 68px);
+            line-height: 1.1;
+            letter-spacing: -2.5px;
+            margin-bottom: 24px;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, var(--accent-indigo), var(--accent-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: clamp(16px, 1.8vw, 19px);
+            color: var(--text-muted);
+            margin-bottom: 35px;
+            font-weight: 400;
+            line-height: 1.6;
+        }
+
+        .hero-image-col {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1;
+        }
+
+        /* Glowing halo effect behind car */
+        .hero-glow-halo {
+            position: absolute;
+            width: 480px;
+            height: 480px;
+            background: radial-gradient(circle, rgba(6, 182, 212, 0.15) 0%, rgba(99, 102, 241, 0.04) 50%, transparent 70%);
+            border-radius: 50%;
+            z-index: 0;
+            filter: blur(20px);
+            animation: pulseHalo 8s ease-in-out infinite;
+        }
+
+        @keyframes pulseHalo {
+            0%, 100% { transform: scale(1); opacity: 0.6; }
+            50% { transform: scale(1.15); opacity: 0.9; }
+        }
+
+        /* Floating car image styling */
+        .hero-car-img {
+            max-width: 100%;
+            height: auto;
+            position: relative;
+            z-index: 2;
+            filter: drop-shadow(0 25px 35px rgba(0,0,0,0.55));
+            animation: floatCar 6s ease-in-out infinite;
+            border-radius: 20px;
+        }
+
+        @keyframes floatCar {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(-0.5deg); }
+        }
+
+        /* Floating Info Badges over Hero Image */
+        .floating-info-badge {
+            position: absolute;
+            background: rgba(13, 14, 21, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--border-glass);
+            border-radius: 16px;
+            padding: 12px 18px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 3;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            animation: floatBadge 6s ease-in-out infinite;
+        }
+        [data-theme="light"] .floating-info-badge {
+            background: rgba(255, 255, 255, 0.7);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        }
+
+        .badge-left {
+            top: 15%;
+            left: -5%;
+            animation-delay: 0.5s;
+        }
+        .badge-right {
+            bottom: 12%;
+            right: -2%;
+            animation-delay: 2s;
+        }
+
+        @keyframes floatBadge {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+        }
+
+        .floating-info-badge i {
+            color: var(--accent-cyan);
+            font-size: 20px;
+        }
+        .badge-text-primary {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin: 0;
+        }
+        .badge-text-secondary {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Custom Outline Button */
+        .btn-outline-custom {
+            background: var(--bg-glass);
+            border: 1px solid var(--border-glass);
+            border-radius: 30px;
+            color: var(--text-main) !important;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn-outline-custom:hover {
+            background: rgba(255,255,255,0.05);
+            border-color: var(--accent-cyan);
+            color: var(--accent-cyan) !important;
+            transform: translateY(-2px);
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.2);
+        }
+        [data-theme="light"] .btn-outline-custom:hover {
+            background: rgba(0,0,0,0.03);
+            border-color: var(--accent-indigo);
+            color: var(--accent-indigo) !important;
+        }
+
+        /* Floating Search Widget */
+        .search-widget-container {
+            margin-top: -65px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .search-widget-card {
+            background: rgba(13, 14, 21, 0.7);
+            border: 1px solid var(--border-glass);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border-radius: 24px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+        }
+        [data-theme="light"] .search-widget-card {
+            background: rgba(255, 255, 255, 0.75);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
+        }
+
+        .widget-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            display: block;
+            text-align: left;
+        }
+
+        .input-group-custom {
+            position: relative;
+        }
+        .input-group-custom i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--accent-cyan);
+            z-index: 5;
+            font-size: 16px;
+        }
+
+        .widget-select, .widget-input {
+            background-color: var(--bg-glass) !important;
+            border: 1px solid var(--border-glass) !important;
+            color: var(--text-main) !important;
+            border-radius: 14px !important;
+            padding: 14px 16px 14px 44px !important;
+            font-size: 14px !important;
+            transition: all 0.3s ease !important;
+            width: 100%;
+        }
+
+        .widget-select:focus, .widget-input:focus {
+            background-color: var(--bg-secondary) !important;
+            border-color: var(--accent-cyan) !important;
+            box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.2) !important;
+            outline: none;
+        }
+
+        .widget-select option {
+            background-color: var(--bg-secondary);
+            color: var(--text-main);
+        }
+
+        /* Stats Cards */
+        .stat-card {
+            background: var(--bg-glass);
+            border: 1px solid var(--border-glass);
+            border-radius: 20px;
+            padding: 35px 20px;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            height: 100%;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-6px);
+            border-color: rgba(6, 182, 212, 0.3);
+            background: var(--bg-secondary);
+            box-shadow: 0 15px 30px rgba(6, 182, 212, 0.08);
+        }
+
+        .stat-icon {
+            font-size: 34px;
+            background: linear-gradient(135deg, var(--accent-indigo), var(--accent-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+
+        .stat-number {
+            font-size: 36px;
+            font-weight: 800;
+            margin-bottom: 6px;
+            font-family: var(--font-display);
+            letter-spacing: -1px;
+        }
+
+        .stat-text {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin: 0;
+            font-weight: 500;
+        }
+
+        /* Section Titles */
+        .section-title {
+            font-size: clamp(30px, 4vw, 42px);
+            letter-spacing: -1.5px;
+            margin-bottom: 14px;
+            font-weight: 800;
+        }
+        .section-subtitle {
+            color: var(--text-muted);
+            margin-bottom: 50px;
+            font-weight: 400;
+            font-size: 17px;
+        }
+
+        /* Category Section */
+        .category-card {
+            background: var(--bg-glass);
+            border: 1px solid var(--border-glass);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 24px;
+            overflow: hidden;
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            height: 380px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 30px;
+            text-decoration: none;
+            margin-bottom: 24px;
+        }
+
+        .category-card-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 1;
+        }
+
+        .category-card::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 80%;
+            background: linear-gradient(to top, rgba(6, 7, 10, 0.95) 10%, rgba(6, 7, 10, 0) 100%);
+            z-index: 2;
+        }
+        [data-theme="light"] .category-card::after {
+            background: linear-gradient(to top, rgba(255, 255, 255, 0.95) 10%, rgba(255, 255, 255, 0) 100%);
+        }
+
+        .category-card-content {
+            position: relative;
+            z-index: 3;
+            transform: translateY(15px);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            text-align: left;
+        }
+
+        .category-card h3 {
+            font-size: 24px;
+            color: var(--text-main);
+            margin-bottom: 8px;
+        }
+
+        .category-card p {
+            color: var(--accent-cyan);
+            font-size: 14px;
+            font-weight: 600;
+            margin: 0;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .category-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(6, 182, 212, 0.35);
+            box-shadow: 0 15px 35px rgba(6, 182, 212, 0.15);
+        }
+
+        .category-card:hover .category-card-bg {
+            transform: scale(1.1);
+        }
+
+        .category-card:hover .category-card-content {
+            transform: translateY(0);
+        }
+
+        .category-card:hover p {
+            opacity: 1;
+        }
+
+        /* Featured Fleet Section CSS */
+        .fleet-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-glass);
+            border-radius: 24px;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        .fleet-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(6, 182, 212, 0.3);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        }
+        [data-theme="light"] .fleet-card:hover {
+            box-shadow: 0 15px 35px rgba(0,0,0,0.06);
+        }
+
+        .fleet-img-container {
+            position: relative;
+            height: 200px;
+            overflow: hidden;
+            background: #11131e;
+        }
+        [data-theme="light"] .fleet-img-container {
+            background: #f1f5f9;
+        }
+
+        .fleet-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        .fleet-card:hover .fleet-img {
+            transform: scale(1.08);
+        }
+
+        .fleet-badge {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            z-index: 5;
+            background: rgba(13, 14, 21, 0.75);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid var(--border-glass);
+            color: var(--accent-cyan);
+            font-size: 11px;
+            font-weight: 700;
+            padding: 6px 12px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .fleet-content {
+            padding: 24px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+        }
+
+        .fleet-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: var(--text-main);
+        }
+
+        .fleet-specs {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-glass);
+            margin-bottom: 20px;
+        }
+
+        .spec-item {
+            display: flex;
+            flex-direction: column;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+        .spec-item i {
+            color: var(--accent-cyan);
+            margin-bottom: 4px;
+            font-size: 14px;
+        }
+        .spec-val {
+            font-weight: 600;
+            color: var(--text-main);
+            margin-top: 2px;
+        }
+
+        .fleet-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+        }
+        .fleet-price {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+        .fleet-price-amount {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--accent-cyan);
+            display: block;
+        }
+
+        .btn-rent {
+            background: var(--bg-glass);
+            border: 1px solid var(--border-glass);
+            color: var(--text-main);
+            padding: 8px 18px;
+            font-size: 13px;
+            font-weight: 600;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        .btn-rent:hover {
+            background: linear-gradient(135deg, var(--accent-indigo), var(--accent-cyan));
+            color: #ffffff !important;
+            border-color: transparent;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(6, 182, 212, 0.3);
+        }
+
+        /* "How It Works" Section CSS */
+        .work-card {
+            background: var(--bg-glass);
+            border: 1px solid var(--border-glass);
+            border-radius: 24px;
+            padding: 40px 30px;
+            height: 100%;
+            position: relative;
+            transition: all 0.4s ease;
+            overflow: hidden;
+            text-align: left;
+        }
+        .work-card:hover {
+            transform: translateY(-6px);
+            border-color: rgba(99, 102, 241, 0.3);
+            background: var(--bg-secondary);
+        }
+
+        .work-number {
+            position: absolute;
+            top: -20px;
+            right: 10px;
+            font-size: 120px;
+            font-weight: 900;
+            color: rgba(99, 102, 241, 0.05);
+            font-family: var(--font-display);
+            line-height: 1;
+            user-select: none;
+            pointer-events: none;
+            transition: all 0.4s ease;
+        }
+        .work-card:hover .work-number {
+            color: rgba(6, 182, 212, 0.08);
+            transform: scale(1.1);
+        }
+
+        .work-icon-box {
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(6, 182, 212, 0.05));
+            border: 1px solid rgba(6, 182, 212, 0.2);
+            color: var(--accent-cyan);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            margin-bottom: 24px;
+        }
+
+        .work-card h4 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+        .work-card p {
+            color: var(--text-muted);
+            font-size: 14px;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        /* Features Section */
+        .features-section {
+            background-color: var(--bg-secondary);
+            border-top: 1px solid var(--border-glass);
+            border-bottom: 1px solid var(--border-glass);
+            position: relative;
+        }
+
+        .feature-box {
+            background: var(--bg-glass);
+            border: 1px solid var(--border-glass);
+            border-radius: 24px;
+            padding: 40px 30px;
+            height: 100%;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            margin-bottom: 24px;
+            text-align: left;
+        }
+
+        .feature-box:hover {
+            transform: translateY(-5px);
+            border-color: rgba(99, 102, 241, 0.2);
+            background: var(--bg-secondary);
+            box-shadow: 0 10px 35px rgba(99, 102, 241, 0.05);
+        }
+
+        .icon-box {
+            width: 64px;
+            height: 64px;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 28px;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(6, 182, 212, 0.05));
+            border: 1px solid rgba(6, 182, 212, 0.2);
+            color: var(--accent-cyan);
+        }
+
+        .feature-box h4 {
+            font-size: 20px;
+            margin-bottom: 16px;
+        }
+
+        .feature-box p {
+            color: var(--text-muted);
+            font-size: 15px;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        /* Testimonials */
+        .testimonials-section {
+            background-color: var(--bg-primary);
+        }
+
+        .testimonial-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-glass);
+            border-radius: 28px;
+            padding: 50px 40px;
+            max-width: 750px;
+            margin: 0 auto;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+        [data-theme="light"] .testimonial-card {
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+        }
+
+        .stars i {
+            color: var(--accent-cyan);
+            font-size: 18px;
+        }
+
+        .testimonial-text {
+            font-size: clamp(16px, 2.2vw, 20px);
+            line-height: 1.7;
+            font-style: italic;
+            color: var(--text-main);
+            margin-bottom: 25px;
+            font-weight: 300;
+        }
+
+        .testimonial-author {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .testimonial-role {
+            font-size: 13px;
+            color: var(--accent-cyan);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .carousel-indicators-custom {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .carousel-indicators-custom button {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: none;
+            background-color: rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+        [data-theme="light"] .carousel-indicators-custom button {
+            background-color: rgba(0, 0, 0, 0.15);
+        }
+
+        .carousel-indicators-custom button.active {
+            background-color: var(--accent-cyan);
+            transform: scale(1.25);
+        }
+
+        /* Digital Invoice Estimator CSS */
+        .invoice-card {
+            background: rgba(13, 14, 21, 0.8) !important;
+            border: 1px solid var(--border-glass) !important;
+            border-radius: 28px !important;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3) !important;
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            padding: 30px;
+        }
+        [data-theme="light"] .invoice-card {
+            background: rgba(255,255,255,0.9) !important;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.06) !important;
+        }
+
+        .invoice-panel {
+            background: rgba(6, 7, 10, 0.4);
+            border: 1px dashed var(--border-glass);
+            border-radius: 18px;
+            padding: 24px;
+            position: relative;
+        }
+        [data-theme="light"] .invoice-panel {
+            background: rgba(0, 0, 0, 0.01);
+        }
+
+        .invoice-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 16px;
+            border-bottom: 1px dashed var(--border-glass);
+            margin-bottom: 16px;
+        }
+        .invoice-logo {
+            font-weight: 800;
+            font-size: 16px;
+            color: var(--text-main);
+            letter-spacing: -0.5px;
+        }
+        .invoice-logo span {
+            color: var(--accent-cyan);
+        }
+        .invoice-number {
+            font-size: 11px;
+            font-family: monospace;
+            color: var(--text-muted);
+        }
+
+        .invoice-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+        .invoice-row:last-of-type {
+            margin-bottom: 0;
+        }
+        .invoice-label {
+            color: var(--text-muted);
+        }
+        .invoice-value {
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .invoice-total-row {
+            display: flex;
+            justify-content: space-between;
+            padding-top: 16px;
+            border-top: 1px solid var(--border-glass);
+            margin-top: 16px;
+            align-items: center;
+        }
+        .invoice-total-label {
+            font-weight: 700;
+            font-size: 16px;
+            color: var(--text-main);
+        }
+        .invoice-total-val {
+            font-size: 24px;
+            font-weight: 850;
+            color: var(--accent-cyan);
+            text-shadow: 0 0 10px rgba(6, 182, 212, 0.25);
+        }
+
+        /* Custom slider styles */
+        .form-range-custom {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: var(--border-glass);
+            outline: none;
+            transition: all 0.3s ease;
+        }
+        .form-range-custom::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-indigo), var(--accent-cyan));
+            cursor: pointer;
+            box-shadow: 0 0 8px rgba(6, 182, 212, 0.4);
+            transition: transform 0.2s ease;
+        }
+        .form-range-custom::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        /* Scroll Progress Back to Top Button */
+        #scrollTopButton {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-glass);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        #scrollTopButton.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        #scrollTopButton:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent-cyan);
+            box-shadow: 0 12px 30px rgba(6, 182, 212, 0.25);
+        }
+        #scrollTopButton svg {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
+        }
+        #scrollTopButton svg circle {
+            fill: none;
+            stroke-width: 3;
+            stroke-linecap: round;
+        }
+        #scrollTopButton svg circle.bg-circle {
+            stroke: var(--border-glass);
+        }
+        #scrollTopButton svg circle.progress-circle {
+            stroke: var(--accent-cyan);
+            stroke-dasharray: 140;
+            stroke-dashoffset: 140;
+            transition: stroke-dashoffset 0.1s linear;
+        }
+        #scrollTopButton i {
+            color: var(--text-main);
+            font-size: 16px;
+            z-index: 2;
+            transition: transform 0.3s ease;
+        }
+        #scrollTopButton:hover i {
+            color: var(--accent-cyan);
+            transform: translateY(-2px);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border-glass);
+            padding: 80px 0 40px 0;
+            color: var(--text-muted);
+        }
+
+        .footer-brand {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .footer-brand span {
+            color: var(--accent-cyan);
+        }
+
+        .footer-links-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 22px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .footer-links {
+            list-style: none;
+            padding: 0;
+            text-align: left;
+        }
+
+        .footer-links li {
+            margin-bottom: 14px;
+        }
+
+        .footer-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: all 0.2s ease;
+            display: inline-block;
+        }
+
+        .footer-links a:hover {
+            color: var(--accent-cyan);
+            transform: translateX(3px);
+        }
+
+        .newsletter-input {
+            background: var(--bg-glass);
+            border: 1px solid var(--border-glass);
+            border-radius: 12px;
+            color: var(--text-main);
+            padding: 12px 16px;
+            font-size: 14px;
+            width: 100%;
+            margin-bottom: 12px;
+            transition: all 0.3s ease;
+        }
+        .newsletter-input:focus {
+            outline: none;
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 10px rgba(6, 182, 212, 0.1);
+        }
+
+        .copyright-text {
+            border-top: 1px solid var(--border-glass);
+            padding-top: 40px;
+            margin-top: 60px;
+            font-size: 14px;
+        }
+
+        .social-link {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--bg-glass);
+            border: 1px solid var(--border-glass);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            margin-right: 10px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        .social-link:hover {
+            background: linear-gradient(135deg, var(--accent-indigo), var(--accent-cyan));
+            color: #ffffff !important;
+            border-color: transparent;
+            transform: translateY(-2px);
+        }
+
+        /* Theme Toggle Button */
+        .btn-theme-toggle {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 18px;
+            padding: 8px;
+            cursor: pointer;
+            transition: color 0.3s ease, transform 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-theme-toggle:hover {
+            color: var(--accent-cyan);
+            transform: rotate(15deg);
+        }
+    </style>
+</head>
+<body>
+
+<!-- Background Glow Spheres -->
+<div class="glow-sphere glow-sphere-1"></div>
+<div class="glow-sphere glow-sphere-2"></div>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+    <div class="container">
+        <a class="navbar-brand" href="#">EliteCars<span>.</span></a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menu" aria-controls="menu" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="menu">
+            <ul class="navbar-nav ms-auto align-items-center">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="pages/cars.html">Cars</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#why-us">Why Choose Us</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#testimonials">Reviews</a>
+                </li>
+                <li class="nav-item ms-lg-3">
+                    <button id="themeToggle" class="btn-theme-toggle" title="Toggle Light/Dark Theme">
+                        <i class="fa-solid fa-moon"></i>
+                    </button>
+                </li>
+                <li class="nav-item ms-lg-3 mt-3 mt-lg-0">
+                    <a class="btn btn-gold" href="pages/login.html">Sign In</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Hero Section -->
+<section class="hero">
+    <div class="container">
+        <div class="row hero-row">
+            <div class="col-lg-6 hero-text-col">
+                <span class="badge mb-3 py-2 px-3 text-uppercase" style="letter-spacing: 2px; font-weight: 700; background: linear-gradient(135deg, rgba(99, 102, 241, 0.12), rgba(6, 182, 212, 0.12)); border: 1px solid rgba(6, 182, 212, 0.25); color: var(--accent-cyan); border-radius: 30px; display: inline-block;">
+                    <i class="fa-solid fa-bolt me-1 text-info animate-pulse"></i> Redefining Utility & Luxury
+                </span>
+                <h1>Drive The <span class="gradient-text">Future</span> of Elite Carss</h1>
+                <p>Experience unmatched comfort, premium quality, and state-of-the-art utility. Rent high-end supercars, elite adventure SUVs, and smart electric vehicles in just 2 minutes.</p>
+                <div class="d-flex flex-wrap gap-3 mt-4">
+                    <a href="pages/cars.html" class="btn btn-gold btn-lg px-5 py-3">Explore Cars <i class="fa-solid fa-arrow-right ms-2"></i></a>
+                    <a href="#estimator" class="btn btn-outline-custom btn-lg px-4 py-3">
+                        Cost Calculator
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6 hero-image-col mt-5 mt-lg-0">
+                <div class="hero-glow-halo"></div>
+                <!-- Floating Info Badge Top Left -->
+                <div class="floating-info-badge badge-left">
+                    <div class="work-icon-box mb-0" style="width:40px; height:40px; border-radius:10px; font-size:16px;">
+                        <i class="fa-solid fa-gauge-high"></i>
+                    </div>
+                    <div>
+                        <p class="badge-text-primary">0-100 km/h: 2.8s</p>
+                        <p class="badge-text-secondary">Pristine Performance</p>
+                    </div>
+                </div>
+                
+                <!-- Main Car Image -->
+                <img src="https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?q=80&w=800" class="hero-car-img" alt="Premium Sportscar">
+                
+                <!-- Floating Info Badge Bottom Right -->
+                <div class="floating-info-badge badge-right">
+                    <div class="work-icon-box mb-0" style="width:40px; height:40px; border-radius:10px; font-size:16px;">
+                        <i class="fa-solid fa-bolt text-warning"></i>
+                    </div>
+                    <div>
+                        <p class="badge-text-primary">Dual Motor AWD</p>
+                        <p class="badge-text-secondary">1020 Horsepower</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Floating Search Widget -->
+<div class="search-widget-container container">
+    <div class="search-widget-card">
+        <div class="row g-3 align-items-end">
+            <div class="col-md-3">
+                <label class="widget-label"><i class="fa-solid fa-car-side text-info me-1"></i> Vehicle Category</label>
+                <div class="input-group-custom">
+                    <i class="fa-solid fa-car"></i>
+                    <select id="widgetCategory" class="form-select widget-select">
+                        <option value="all">All Categories</option>
+                        <option value="Premium">Premium Luxury</option>
+                        <option value="SUV">Elite SUVs</option>
+                        <option value="Electric">Futuristic Electric</option>
+                        <option value="Budget">Budget Friendly</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <label class="widget-label"><i class="fa-solid fa-calendar-days text-info me-1"></i> Pick-up Date</label>
+                <div class="input-group-custom">
+                    <i class="fa-solid fa-calendar-plus"></i>
+                    <input type="date" id="widgetPickup" class="form-control widget-input">
+                </div>
+            </div>
+            <div class="col-md-3">
+                <label class="widget-label"><i class="fa-solid fa-calendar-check text-info me-1"></i> Return Date</label>
+                <div class="input-group-custom">
+                    <i class="fa-solid fa-calendar-check"></i>
+                    <input type="date" id="widgetReturn" class="form-control widget-input">
+                </div>
+            </div>
+            <div class="col-md-3">
+                <button onclick="handleWidgetSearch()" class="btn btn-gold w-100 py-3 d-flex align-items-center justify-content-center gap-2" style="border-radius: 14px; height: 50px;">
+                    <i class="fa-solid fa-magnifying-glass"></i> Search Cars
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Stats Section -->
+<section class="container my-5 pt-5">
+    <div class="row g-4 text-center">
+        <div class="col-6 col-md-3">
+            <div class="stat-card">
+                <i class="fa-solid fa-car-side stat-icon"></i>
+                <h3 class="stat-number">15K+</h3>
+                <p class="stat-text">Successful Bookings</p>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="stat-card">
+                <i class="fa-solid fa-gauge-high stat-icon"></i>
+                <h3 class="stat-number">30+</h3>
+                <p class="stat-text">Premium Cars</p>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="stat-card">
+                <i class="fa-solid fa-map-location-dot stat-icon"></i>
+                <h3 class="stat-number">20+</h3>
+                <p class="stat-text">Hubs Nationwide</p>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="stat-card">
+                <i class="fa-solid fa-star stat-icon"></i>
+                <h3 class="stat-number">4.9</h3>
+                <p class="stat-text">Verified User Rating</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Categories Section -->
+<section class="container py-5 my-4" id="categories">
+    <div class="text-center mb-5">
+        <h2 class="section-title">Explore Our Cars by Category</h2>
+        <p class="section-subtitle">Specially curated categories to fit your lifestyle, business, and adventures.</p>
+    </div>
+    <div class="row">
+        <!-- Premium -->
+        <div class="col-md-6 col-lg-3">
+            <a href="pages/cars.html?category=Premium" class="category-card">
+                <div class="category-card-bg" style="background-image: url('https://images.unsplash.com/photo-1555215695-3004980ad54e?q=80&w=600');"></div>
+                <div class="category-card-content">
+                    <h3>Premium</h3>
+                    <p>Rent luxury <i class="fa-solid fa-arrow-right ms-1"></i></p>
+                </div>
+            </a>
+        </div>
+        <!-- SUV -->
+        <div class="col-md-6 col-lg-3">
+            <a href="pages/cars.html?category=SUV" class="category-card">
+                <div class="category-card-bg" style="background-image: url('https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?q=80&w=600');"></div>
+                <div class="category-card-content">
+                    <h3>SUV</h3>
+                    <p>Rent performance <i class="fa-solid fa-arrow-right ms-1"></i></p>
+                </div>
+            </a>
+        </div>
+        <!-- Electric -->
+        <div class="col-md-6 col-lg-3">
+            <a href="pages/cars.html?category=Electric" class="category-card">
+                <div class="category-card-bg" style="background-image: url('https://images.unsplash.com/photo-1563720223185-11003d516935?q=80&w=600');"></div>
+                <div class="category-card-content">
+                    <h3>Electric</h3>
+                    <p>Rent the future <i class="fa-solid fa-arrow-right ms-1"></i></p>
+                </div>
+            </a>
+        </div>
+        <!-- Budget -->
+        <div class="col-md-6 col-lg-3">
+            <a href="pages/cars.html?category=Budget" class="category-card">
+                <div class="category-card-bg" style="background-image: url('https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?q=80&w=600');"></div>
+                <div class="category-card-content">
+                    <h3>Budget</h3>
+                    <p>Rent efficiency <i class="fa-solid fa-arrow-right ms-1"></i></p>
+                </div>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Vehicles Section -->
+<section class="container py-5 my-4" id="featured-fleet">
+    <div class="text-center mb-5">
+        <h2 class="section-title">Featured Vehicles</h2>
+        <p class="section-subtitle">Experience our most requested high-performance models available today.</p>
+    </div>
+    <div class="row g-4">
+        <!-- Tesla Model S Plaid -->
+        <div class="col-md-6 col-lg-3">
+            <div class="fleet-card">
+                <div class="fleet-img-container">
+                    <span class="fleet-badge">Electric</span>
+                    <img src="https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?q=80&w=600" class="fleet-img" alt="Tesla Model S Plaid">
+                </div>
+                <div class="fleet-content">
+                    <h4 class="fleet-title">Tesla Model S Plaid</h4>
+                    <div class="fleet-specs">
+                        <div class="spec-item">
+                            <i class="fa-solid fa-bolt"></i>
+                            <span class="spec-val">Electric</span>
+                        </div>
+                        <div class="spec-item">
+                            <i class="fa-solid fa-gauge-high"></i>
+                            <span class="spec-val">1020 HP</span>
+                        </div>
+                        <div class="spec-item">
+                            <i class="fa-solid fa-road"></i>
+                            <span class="spec-val">628 km</span>
+                        </div>
+                    </div>
+                    <div class="fleet-footer">
+                        <div class="fleet-price">
+                            Weekly Rent
+                            <span class="fleet-price-amount">₹8,000<small style="font-size:12px; font-weight:normal; color:var(--text-muted)">/day</small></span>
+                        </div>
+                        <a href="pages/login.html" class="btn-rent">Rent Now</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Porsche 911 GT3 RS -->
+        <div class="col-md-6 col-lg-3">
+            <div class="fleet-card">
+                <div class="fleet-img-container">
+                    <span class="fleet-badge">Premium</span>
+                    <img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=600" class="fleet-img" alt="Porsche 911 GT3 RS">
+                </div>
+                <div class="fleet-content">
+                    <h4 class="fleet-title">Porsche 911 GT3 RS</h4>
+                    <div class="fleet-specs">
+                        <div class="spec-item">
+                            <i class="fa-solid fa-gears"></i>
+                            <span class="spec-val">Automatic</span>
+                        </div>
+                        <div class="spec-item">
+                            <i class="fa-solid fa-fire"></i>
+                            <span class="spec-val">520 HP</span>
+                        </div>
+                        <div class="spec-item">
+                            <i class="fa-solid fa-gauge"></i>
+                            <span class="spec-val">V6 Twin</span>
+                        </div>
+                    </div>
+                    <div class="fleet-footer">
+                        <div class="fleet-price">
+                            Weekly Rent
+                            <span class="fleet-price-amount">₹12,000<small style="font-size:12px; font-weight:normal; color:var(--text-muted)">/day</small></span>
+                        </div>
+                        <a href="pages/login.html" class="btn-rent">Rent Now</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Range Rover Autobiography -->
+        <div class="col-md-6 col-lg-3">
+            <div class="fleet-card">
+                <div class="fleet-img-container">
+                    <span class="fleet-badge">SUV</span>
+                    <img src="images/range_rover.png" class="fleet-img" alt="Range Rover">
+                </div>
+                <div class="fleet-content">
+                    <h4 class="fleet-title">Range Rover Executive</h4>
+                    <div class="fleet-specs">
+                        <div class="spec-item">
+                            <i class="fa-solid fa-mountain-sun"></i>
+                            <span class="spec-val">4x4 AWD</span>
+                        </div>
+                        <div class="spec-item">
+                            <i class="fa-solid fa-users"></i>
+                            <span class="spec-val">7 Seater</span>
+                        </div>
+                        <div class="spec-item">
+                            <i class="fa-solid fa-gears"></i>
+                            <span class="spec-val">Automatic</span>
+                        </div>
+                    </div>
+                    <div class="fleet-footer">
+                        <div class="fleet-price">
+                            Weekly Rent
+                            <span class="fleet-price-amount">₹5,500<small style="font-size:12px; font-weight:normal; color:var(--text-muted)">/day</small></span>
+                        </div>
+                        <a href="pages/login.html" class="btn-rent">Rent Now</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- BMW i8 Roadster -->
+        <div class="col-md-6 col-lg-3">
+            <div class="fleet-card">
+                <div class="fleet-img-container">
+                    <span class="fleet-badge">Electric</span>
+                    <img src="https://images.unsplash.com/photo-1534093607318-f025413f49cb?q=80&w=600" class="fleet-img" alt="BMW i8 Roadster">
+                </div>
+                <div class="fleet-content">
+                    <h4 class="fleet-title">BMW i8 Roadster</h4>
+                    <div class="fleet-specs">
+                        <div class="spec-item">
+                            <i class="fa-solid fa-plug-circle-check"></i>
+                            <span class="spec-val">Hybrid</span>
+                        </div>
+                        <div class="spec-item">
+                            <i class="fa-solid fa-bolt-lightning"></i>
+                            <span class="spec-val">369 HP</span>
+                        </div>
+                        <div class="spec-item">
+                            <i class="fa-solid fa-wind"></i>
+                            <span class="spec-val">Roadster</span>
+                        </div>
+                    </div>
+                    <div class="fleet-footer">
+                        <div class="fleet-price">
+                            Weekly Rent
+                            <span class="fleet-price-amount">₹8,500<small style="font-size:12px; font-weight:normal; color:var(--text-muted)">/day</small></span>
+                        </div>
+                        <a href="pages/login.html" class="btn-rent">Rent Now</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- "How It Works" Section -->
+<section class="container py-5 my-5" id="how-it-works">
+    <div class="text-center mb-5">
+        <h2 class="section-title">Rent Your Dream Car in 3 Easy Steps</h2>
+        <p class="section-subtitle">Our booking engine guarantees instant approvals and delivery options.</p>
+    </div>
+    <div class="row g-4">
+        <!-- Step 1 -->
+        <div class="col-md-4">
+            <div class="work-card">
+                <div class="work-number">01</div>
+                <div class="work-icon-box">
+                    <i class="fa-solid fa-car-side"></i>
+                </div>
+                <h4>Select Your Car</h4>
+                <p>Browse our verified selection of 30+ premium sports cars, SUVs, and luxury electric vehicles. View exact images and detailed specifications.</p>
+            </div>
+        </div>
+        <!-- Step 2 -->
+        <div class="col-md-4">
+            <div class="work-card">
+                <div class="work-number">02</div>
+                <div class="work-icon-box">
+                    <i class="fa-solid fa-calendar-check"></i>
+                </div>
+                <h4>Choose Dates & Estimate</h4>
+                <p>Pick your rental timeline, review pricing with our transparent quick calculator, and submit your profile in minutes.</p>
+            </div>
+        </div>
+        <!-- Step 3 -->
+        <div class="col-md-4">
+            <div class="work-card">
+                <div class="work-number">03</div>
+                <div class="work-icon-box">
+                    <i class="fa-solid fa-key"></i>
+                </div>
+                <h4>Pickup & Hit the Road</h4>
+                <p>Clear verification and check out instantly. Grab the keys from our smart hub or request premium doorstep vehicle delivery.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Interactive Quick Estimator Section -->
+<section class="container py-5 my-5" id="estimator">
+    <div class="row align-items-center">
+        <div class="col-lg-5 text-start mb-5 mb-lg-0">
+            <span class="badge mb-3 py-2 px-3 text-uppercase" style="letter-spacing: 2px; font-weight: 700; background: linear-gradient(135deg, rgba(99, 102, 241, 0.12), rgba(6, 182, 212, 0.12)); border: 1px solid rgba(6, 182, 212, 0.25); color: var(--accent-cyan); border-radius: 30px; display: inline-block;">
+                Real-Time Invoice Calculator
+            </span>
+            <h2 class="section-title text-start mb-3" style="display: block;">Quick Rental Estimator</h2>
+            <p class="text-muted" style="font-size: 16px; line-height: 1.6;">Adjust your vehicle class and choose the duration slide-control. We offer transparent pricing structures with zero hidden booking charges. Free standard insurance is automatically pre-bundled.</p>
+            <div class="mt-4">
+                <a href="pages/cars.html" class="btn btn-gold btn-lg px-4 py-3">Book Your Ride Now</a>
+            </div>
+        </div>
+        <div class="col-lg-7">
+            <div class="card invoice-card">
+                <div class="row g-4">
+                    <div class="col-md-6 text-start">
+                        <label class="widget-label"><i class="fa-solid fa-car text-info me-1"></i> Car Class</label>
+                        <div class="input-group-custom">
+                            <i class="fa-solid fa-car-rear" style="left:16px;"></i>
+                            <select id="estCategory" class="form-select widget-select w-100" onchange="calculateEstimate()">
+                                <option value="Budget" data-price="2500">Budget Friendly (₹2,500/day)</option>
+                                <option value="SUV" data-price="5500">Elite SUV (₹5,500/day)</option>
+                                <option value="Electric" data-price="8000">Futuristic Electric (₹8,000/day)</option>
+                                <option value="Premium" data-price="12000" selected>Premium Luxury (₹12,000/day)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6 text-start">
+                        <label class="widget-label"><i class="fa-solid fa-calendar text-info me-1"></i> Rental Duration</label>
+                        <div class="d-flex align-items-center gap-3 mt-2">
+                            <input type="range" class="form-range-custom" id="estDaysRange" min="1" max="30" step="1" value="5" oninput="updateEstDays(this.value); calculateEstimate();" style="flex: 1;">
+                            <span class="badge text-info p-2" id="estDaysLabel" style="font-size: 14px; min-width: 65px; border: 1px solid var(--border-glass); background: var(--bg-glass); border-radius: 8px;">5 Days</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <hr style="border-color: var(--border-glass); margin: 30px 0;">
+                
+                <!-- High-Tech Invoice Receipt -->
+                <div class="invoice-panel text-start">
+                    <div class="invoice-header">
+                        <div class="invoice-logo">EliteCars<span>.</span> Invoice</div>
+                        <div class="invoice-number">#EST-2026-904</div>
+                    </div>
+                    <div class="invoice-row">
+                        <span class="invoice-label">Daily Base Rate:</span>
+                        <span class="invoice-value" id="estDailyRate">₹12,000</span>
+                    </div>
+                    <div class="invoice-row">
+                        <span class="invoice-label">Selected Duration:</span>
+                        <span class="invoice-value" id="estDaysInvoice">5 Days</span>
+                    </div>
+                    <div class="invoice-row">
+                        <span class="invoice-label">Comprehensive Collision Waiver:</span>
+                        <span class="invoice-value text-success fw-bold">FREE INCLUDED</span>
+                    </div>
+                    <div class="invoice-row">
+                        <span class="invoice-label">Taxes & Fees (GST 18%):</span>
+                        <span class="invoice-value text-info">INCLUDED</span>
+                    </div>
+                    <div class="invoice-total-row">
+                        <span class="invoice-total-label">Estimated Total Cost:</span>
+                        <span class="invoice-total-val" id="estTotalAmount">₹60,000</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Why Choose Us / Experience Section -->
+<section class="features-section py-5 my-5" id="why-us">
+    <div class="container py-5">
+        <div class="text-center mb-5">
+            <h2 class="section-title">The EliteCars Experience</h2>
+            <p class="section-subtitle">We redefine utility with comfort and luxury.</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="feature-box">
+                    <div class="icon-box">
+                        <i class="fa-solid fa-circle-check fa-2x"></i>
+                    </div>
+                    <h4>Elite Car Selection</h4>
+                    <p>Each of our cars is meticulously inspected, deep-cleaned, and detailed to guarantee pristine performance and a showroom finish.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-box">
+                    <div class="icon-box">
+                        <i class="fa-solid fa-wallet fa-2x"></i>
+                    </div>
+                    <h4>Transparent Fair Pricing</h4>
+                    <p>No hidden surprise fees, no booking charges, and zero processing fees. What you see is exactly what you pay, comprehensive insurance included.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-box">
+                    <div class="icon-box">
+                        <i class="fa-solid fa-headset fa-2x"></i>
+                    </div>
+                    <h4>24/7 Concierge Support</h4>
+                    <p>Our VIP support team is always active. From breakdown recovery assistance to trip extensions, we are here for you.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="testimonials-section py-5 my-5" id="testimonials">
+    <div class="container py-4">
+        <div class="text-center mb-5">
+            <h2 class="section-title">Client Reviews</h2>
+            <p class="section-subtitle">Read firsthand experiences from our premium rental community.</p>
+        </div>
+        
+        <div id="testimonialCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="5000">
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <div class="testimonial-card">
+                        <div class="stars mb-3">
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                        </div>
+                        <p class="testimonial-text">"The best Elite Cars experience ever! The Tesla Model S was in pristine condition, and the checkout took less than 2 minutes. Absolutely recommended!"</p>
+                        <h5 class="testimonial-author">Sarah Jenkins</h5>
+                        <span class="testimonial-role">Premium Member</span>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <div class="testimonial-card">
+                        <div class="stars mb-3">
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                        </div>
+                        <p class="testimonial-text">"Mahindra Thar 4x4 was perfect for our weekend trip to the hills. Robust performance, clean cabin, and friendly support. Will book again!"</p>
+                        <h5 class="testimonial-author">Rohan Mehta</h5>
+                        <span class="testimonial-role">Adventure Enthusiast</span>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <div class="testimonial-card">
+                        <div class="stars mb-3">
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star-half-stroke"></i>
+                        </div>
+                        <p class="testimonial-text">"Excellent pricing and transparent policies. The Tata Nexon EV was fully charged and ready. No hidden fees at all. Customer service was superb."</p>
+                        <h5 class="testimonial-author">Priya Sharma</h5>
+                        <span class="testimonial-role">Corporate Client</span>
+                    </div>
+                </div>
+            </div>
+            <div class="carousel-indicators-custom mt-4">
+                <button type="button" data-bs-target="#testimonialCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                <button type="button" data-bs-target="#testimonialCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+                <button type="button" data-bs-target="#testimonialCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-4 mb-5 mb-lg-0 text-start">
+                <div class="footer-brand">EliteCars<span>.</span></div>
+                <p class="pe-lg-5 mb-4">Premium Elite Carss, delivering elegance, convenience, and unmatched customer service across the nation.</p>
+                <div class="d-flex">
+                    <a href="#" class="social-link"><i class="fa-brands fa-facebook-f"></i></a>
+                    <a href="#" class="social-link"><i class="fa-brands fa-twitter"></i></a>
+                    <a href="#" class="social-link"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="#" class="social-link"><i class="fa-brands fa-linkedin-in"></i></a>
+                </div>
+            </div>
+            <div class="col-sm-6 col-lg-2 offset-lg-1 mb-4 mb-lg-0 text-start">
+                <h5 class="footer-links-title">Navigation</h5>
+                <ul class="footer-links">
+                    <li><a href="#">Home</a></li>
+                    <li><a href="pages/cars.html">Our Cars</a></li>
+                    <li><a href="#why-us">Why Choose Us</a></li>
+                    <li><a href="pages/login.html">Sign In</a></li>
+                </ul>
+            </div>
+            <div class="col-sm-6 col-lg-2 mb-4 mb-lg-0 text-start">
+                <h5 class="footer-links-title">Contact Us</h5>
+                <ul class="footer-links">
+                    <li><a href="mailto:support@EliteCars.com"><i class="fa-solid fa-envelope text-info me-2"></i> support@EliteCars.com</a></li>
+                    <li><a href="tel:+18005550199"><i class="fa-solid fa-phone text-info me-2"></i> +1 (800) 555-0199</a></li>
+                    <li><a href="#"><i class="fa-solid fa-location-dot text-info me-2"></i> 100 Premium Way, Suite A</a></li>
+                </ul>
+            </div>
+            <div class="col-lg-3 text-start">
+                <h5 class="footer-links-title">Newsletter</h5>
+                <p>Subscribe to catch latest premium additions and member-only promotions.</p>
+                <form onsubmit="event.preventDefault(); alert('Subscribed successfully!');">
+                    <input type="email" placeholder="Your email address" class="newsletter-input" required>
+                    <button type="submit" class="btn btn-gold w-100 py-2 mt-1">Subscribe</button>
+                </form>
+            </div>
+        </div>
+        <div class="text-center copyright-text">
+            <p>&copy; 2026 EliteCars. All rights reserved.</p>
+        </div>
+    </div>
+</footer>
+
+<!-- Scroll Progress Back to Top Button -->
+<button id="scrollTopButton" title="Scroll back to top">
+    <svg viewBox="0 0 50 50">
+        <circle class="bg-circle" cx="25" cy="25" r="22"></circle>
+        <circle class="progress-circle" cx="25" cy="25" r="22"></circle>
+    </svg>
+    <i class="fa-solid fa-arrow-up"></i>
+</button>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Date input boundary validation
+    document.addEventListener("DOMContentLoaded", () => {
+        const today = new Date().toISOString().split('T')[0];
+        const pickupInput = document.getElementById("widgetPickup");
+        const returnInput = document.getElementById("widgetReturn");
+        
+        if (pickupInput && returnInput) {
+            pickupInput.setAttribute('min', today);
+            returnInput.setAttribute('min', today);
+            
+            pickupInput.addEventListener("change", () => {
+                returnInput.setAttribute('min', pickupInput.value);
+            });
+        }
+    });
+
+    // Handle Quick Search Redirection
+    function handleWidgetSearch() {
+        const cat = document.getElementById("widgetCategory").value;
+        const pickup = document.getElementById("widgetPickup").value;
+        const ret = document.getElementById("widgetReturn").value;
+
+        if (pickup) {
+            sessionStorage.setItem("pickupDate", pickup);
+        }
+        if (ret) {
+            sessionStorage.setItem("returnDate", ret);
+        }
+
+        let url = "pages/cars.html";
+        if (cat && cat !== "all") {
+            url += "?category=" + cat;
+        }
+        window.location.href = url;
+    }
+
+    // Theme Toggle Handler with CSS variable switching
+    document.addEventListener("DOMContentLoaded", () => {
+        const themeToggleBtn = document.getElementById('themeToggle');
+        const currentTheme = localStorage.getItem('theme') || 'dark';
+
+        if (currentTheme === 'light') {
+            document.documentElement.setAttribute('data-theme', 'light');
+            if (themeToggleBtn) {
+                themeToggleBtn.innerHTML = '<i class="fa-solid fa-sun"></i>';
+            }
+        } else {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            if (themeToggleBtn) {
+                themeToggleBtn.innerHTML = '<i class="fa-solid fa-moon"></i>';
+            }
+        }
+
+        if (themeToggleBtn) {
+            themeToggleBtn.addEventListener('click', () => {
+                let theme = document.documentElement.getAttribute('data-theme');
+                if (theme === 'light') {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                    localStorage.setItem('theme', 'dark');
+                    themeToggleBtn.innerHTML = '<i class="fa-solid fa-moon"></i>';
+                } else {
+                    document.documentElement.setAttribute('data-theme', 'light');
+                    localStorage.setItem('theme', 'light');
+                    themeToggleBtn.innerHTML = '<i class="fa-solid fa-sun"></i>';
+                }
+            });
+        }
+    });
+
+    // Scroll Progress Back To Top Logic
+    document.addEventListener("DOMContentLoaded", () => {
+        const scrollTopBtn = document.getElementById("scrollTopButton");
+        const progressCircle = document.querySelector(".progress-circle");
+        
+        if (scrollTopBtn && progressCircle) {
+            const pathLength = 2 * Math.PI * 22; // Circle radius is 22, circum = 138.2
+            
+            const updateScrollProgress = () => {
+                const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+                const scrollTop = window.scrollY;
+                
+                if (scrollTop > 300) {
+                    scrollTopBtn.classList.add("show");
+                } else {
+                    scrollTopBtn.classList.remove("show");
+                }
+                
+                const progress = scrollTop / scrollHeight;
+                const dashoffset = pathLength - (progress * pathLength);
+                progressCircle.style.strokeDashoffset = dashoffset;
+            };
+            
+            window.addEventListener("scroll", updateScrollProgress);
+            
+            scrollTopBtn.addEventListener("click", () => {
+                window.scrollTo({
+                    top: 0,
+                    behavior: "smooth"
+                });
+            });
+        }
+    });
+
+    // Interactive Estimator Calculations
+    function updateEstDays(val) {
+        document.getElementById("estDaysLabel").textContent = `${val} Day${val > 1 ? 's' : ''}`;
+        document.getElementById("estDaysInvoice").textContent = `${val} Day${val > 1 ? 's' : ''}`;
+    }
+
+    function calculateEstimate() {
+        const select = document.getElementById("estCategory");
+        if (!select) return;
+        const selectedOption = select.options[select.selectedIndex];
+        const rate = parseFloat(selectedOption.getAttribute("data-price"));
+        const days = parseInt(document.getElementById("estDaysRange").value);
+        
+        const total = rate * days;
+        
+        document.getElementById("estDailyRate").textContent = `₹${rate.toLocaleString()}`;
+        document.getElementById("estTotalAmount").textContent = `₹${total.toLocaleString()}`;
+    }
+
+    // Initialize estimator on load
+    document.addEventListener("DOMContentLoaded", () => {
+        if (document.getElementById("estCategory")) {
+            calculateEstimate();
+        }
+    });
+</script>
+</body>
+</html>

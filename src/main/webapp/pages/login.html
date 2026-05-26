@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>
+        (function() {
+            const theme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', theme);
+        })();
+    </script>
+    <meta charset="UTF-8">
+    <title>Login - EliteCars</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- CDNs -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-primary: #06070a; /* Midnight Obsidian */
+            --bg-secondary: #0d0e15; /* Carbon Deep Slate */
+            --bg-glass: rgba(255, 255, 255, 0.03);
+            --border-glass: rgba(255, 255, 255, 0.06);
+            --accent-indigo: #6366f1; /* Electric Indigo */
+            --accent-cyan: #06b6d4; /* Cyber Cyan */
+            --accent-indigo-hover: #4f46e5;
+            --accent-cyan-hover: #0891b2;
+            --text-main: #f8fafc; /* Slate-50 */
+            --text-muted: #94a3b8; /* Slate-400 */
+            --font-display: 'Plus Jakarta Sans', sans-serif;
+            --font-sans: 'Inter', sans-serif;
+        }
+
+        [data-theme="light"] {
+            --bg-primary: #f8fafc; /* Slate-50 */
+            --bg-secondary: #ffffff; /* White */
+            --bg-glass: rgba(0, 0, 0, 0.02);
+            --border-glass: rgba(0, 0, 0, 0.08);
+            --accent-indigo: #4f46e5; /* Indigo-600 */
+            --accent-cyan: #0891b2; /* Cyber Cyan-600 */
+            --accent-indigo-hover: #4338ca;
+            --accent-cyan-hover: #0e7490;
+            --text-main: #0f172a; /* Slate-900 */
+            --text-muted: #475569; /* Slate-600 */
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--bg-primary);
+            color: var(--text-main);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .text-muted {
+            color: var(--text-muted) !important;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at center, rgba(6, 182, 212, 0.08) 0%, transparent 60%),
+                        url('https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=1920') no-repeat center center;
+            background-size: cover;
+            opacity: 0.12;
+            z-index: 0;
+        }
+
+        /* Floating Home Button */
+        .btn-back-home {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            z-index: 10;
+            font-size: 15px;
+        }
+
+        .btn-back-home:hover {
+            color: var(--accent-cyan);
+            transform: translateX(-3px);
+        }
+
+        .login-box {
+            position: relative;
+            z-index: 1;
+            width: 440px;
+            background: var(--bg-glass);
+            border: 1px solid var(--border-glass);
+            backdrop-filter: blur(20px);
+            padding: 50px 40px;
+            border-radius: 28px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .login-box h2 {
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 32px;
+            letter-spacing: -1px;
+            margin-bottom: 8px;
+            background: linear-gradient(to right, var(--text-main) 70%, var(--accent-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .login-subtitle {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-bottom: 35px;
+        }
+
+        /* Forms */
+        .form-label {
+            font-weight: 500;
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .input-group-text {
+            background-color: var(--bg-glass);
+            border: 1px solid var(--border-glass);
+            border-right: none;
+            color: var(--text-muted);
+            border-top-left-radius: 12px;
+            border-bottom-left-radius: 12px;
+        }
+
+        .form-control {
+            background-color: var(--bg-glass);
+            border: 1px solid var(--border-glass);
+            color: var(--text-main);
+            border-top-right-radius: 12px;
+            border-bottom-right-radius: 12px;
+            padding: 12px 16px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            background-color: var(--bg-glass);
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.15);
+            color: var(--text-main);
+        }
+
+        .form-control::placeholder {
+            color: var(--text-muted);
+            opacity: 0.5;
+        }
+
+        /* Indigo-Cyan Gradient Button */
+        .btn-gold {
+            background: linear-gradient(135deg, var(--accent-indigo), var(--accent-cyan));
+            color: #ffffff !important;
+            font-weight: 600;
+            border: none;
+            border-radius: 14px;
+            padding: 14px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.2);
+            font-size: 16px;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-gold:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(6, 182, 212, 0.4);
+            background: linear-gradient(135deg, var(--accent-indigo-hover), var(--accent-cyan-hover));
+        }
+
+        .login-footer {
+            text-align: center;
+            margin-top: 25px;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .login-footer a {
+            color: var(--accent-cyan);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .login-footer a:hover {
+            color: var(--accent-cyan-hover);
+        }
+
+        .custom-error-alert {
+            background: rgba(239, 68, 68, 0.08);
+            border: 1px solid rgba(239, 68, 68, 0.15);
+            color: #f87171;
+            border-radius: 12px;
+            padding: 12px 16px;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            animation: fadeInDown 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        [data-theme="light"] .custom-error-alert {
+            background: rgba(220, 38, 38, 0.06);
+            border: 1px solid rgba(220, 38, 38, 0.12);
+            color: #dc2626;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Floating Home Button -->
+<a href="../index.html" class="btn-back-home">
+    <i class="fa-solid fa-arrow-left"></i> Back to Home
+</a>
+
+<div class="login-box">
+    <h2>Welcome Back</h2>
+    <p class="login-subtitle">Sign in to unlock exclusive rental options.</p>
+
+    <form action="../login" method="post">
+        <!-- Email -->
+        <div class="mb-4">
+            <label class="form-label">Email Address</label>
+            <div class="input-group">
+                <span class="input-group-text"><i class="fa-solid fa-envelope"></i></span>
+                <input type="email" name="email" class="form-control" placeholder="name@example.com" required autocomplete="email">
+            </div>
+        </div>
+
+        <!-- Password -->
+        <div class="mb-4">
+            <label class="form-label">Password</label>
+            <div class="input-group">
+                <span class="input-group-text"><i class="fa-solid fa-lock"></i></span>
+                <input type="password" name="password" class="form-control" placeholder="••••••••" required autocomplete="current-password">
+            </div>
+        </div>
+
+        <!-- Button -->
+        <button type="submit" class="btn btn-gold w-100 mt-2">Sign In</button>
+    </form>
+
+    <div class="login-footer">
+        Don't have an account? <a href="register.html">Register here</a>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Check for login errors in URL
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("error") === "invalid") {
+        const errorAlert = document.createElement("div");
+        errorAlert.className = "custom-error-alert";
+        errorAlert.innerHTML = "<i class='fa-solid fa-triangle-exclamation'></i> Invalid email or password. Please try again.";
+        document.querySelector("form").prepend(errorAlert);
+    }
+
+    document.querySelector('form').addEventListener('submit', function() {
+        const emailInput = document.querySelector('[name="email"]');
+        if (emailInput && emailInput.value) {
+            const email = emailInput.value.toLowerCase().trim();
+            localStorage.setItem('currentUserEmail', email);
+            
+            // Retrieve name from userNames mapping or fall back to formatting the email address prefix
+            const userNames = JSON.parse(localStorage.getItem('userNames') || '{}');
+            const name = userNames[email];
+            if (name) {
+                sessionStorage.setItem('currentUserName', name);
+            } else {
+                const parts = email.split('@')[0].split(/[._-]/);
+                const guessedName = parts.map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(' ');
+                sessionStorage.setItem('currentUserName', guessedName);
+            }
+        }
+    });
+</script>
+</body>
+</html>

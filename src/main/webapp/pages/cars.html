@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>
+        (function() {
+            const theme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', theme);
+        })();
+    </script>
+    <meta charset="UTF-8">
+    <title>Our Cars - EliteCars</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- CDNs -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-primary: #06070a; /* Midnight Obsidian */
+            --bg-secondary: #0d0e15; /* Carbon Deep Slate */
+            --bg-glass: rgba(255, 255, 255, 0.03);
+            --border-glass: rgba(255, 255, 255, 0.06);
+            --accent-indigo: #6366f1; /* Electric Indigo */
+            --accent-cyan: #06b6d4; /* Cyber Cyan */
+            --accent-indigo-hover: #4f46e5;
+            --accent-cyan-hover: #0891b2;
+            --text-main: #f8fafc; /* Slate-50 */
+            --text-muted: #94a3b8; /* Slate-400 */
+            --font-display: 'Plus Jakarta Sans', sans-serif;
+            --font-sans: 'Inter', sans-serif;
+            --navbar-bg: rgba(6, 7, 10, 0.85);
+        }
+
+        [data-theme="light"] {
+            --bg-primary: #f8fafc; /* Slate-50 */
+            --bg-secondary: #ffffff; /* White */
+            --bg-glass: rgba(0, 0, 0, 0.02);
+            --border-glass: rgba(0, 0, 0, 0.08);
+            --accent-indigo: #4f46e5; /* Indigo-600 */
+            --accent-cyan: #0891b2; /* Cyber Cyan-600 */
+            --accent-indigo-hover: #4338ca;
+            --accent-cyan-hover: #0e7490;
+            --text-main: #0f172a; /* Slate-900 */
+            --text-muted: #475569; /* Slate-600 */
+            --navbar-bg: rgba(248, 250, 252, 0.85);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--bg-primary);
+            color: var(--text-main);
+            overflow-x: hidden;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: var(--font-display);
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .text-muted {
+            color: var(--text-muted) !important;
+        }
+
+        /* Glassmorphic Navbar */
+        .navbar {
+            background: var(--navbar-bg) !important;
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid var(--border-glass);
+            padding: 15px 0;
+            transition: all 0.3s ease;
+        }
+        
+        .navbar-brand {
+            font-size: 26px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, var(--text-main) 40%, var(--accent-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-link {
+            color: var(--text-muted) !important;
+            font-weight: 500;
+            margin-left: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--accent-cyan) !important;
+        }
+
+        /* Premium Indigo-Cyan Gradient CTA Button */
+        .btn-gold {
+            background: linear-gradient(135deg, var(--accent-indigo), var(--accent-cyan));
+            color: #ffffff !important;
+            font-weight: 600;
+            border: none;
+            border-radius: 30px;
+            padding: 8px 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+            font-size: 14px;
+        }
+
+        .btn-gold:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(6, 182, 212, 0.5);
+            background: linear-gradient(135deg, var(--accent-indigo-hover), var(--accent-cyan-hover));
+        }
+
+        /* Hero */
+        .dashboard-hero {
+            height: 25vh;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle at top right, rgba(99, 102, 241, 0.08), transparent 45%),
+                        var(--bg-secondary);
+            text-align: center;
+            position: relative;
+            border-bottom: 1px solid var(--border-glass);
+        }
+
+        .dashboard-hero h1 {
+            font-size: clamp(32px, 4vw, 48px);
+            margin-bottom: 8px;
+            letter-spacing: -1.5px;
+            background: linear-gradient(135deg, #ffffff, var(--text-muted));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .dashboard-hero p {
+            color: var(--text-muted);
+            font-size: clamp(14px, 1.5vw, 17px);
+            font-weight: 300;
+        }
+
+        /* Advanced Filter Sidebar */
+        .filter-sidebar {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-glass);
+            border-radius: 24px;
+            padding: 24px;
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 100px;
+            margin-bottom: 30px;
+        }
+
+        .filter-group {
+            border-bottom: 1px solid var(--border-glass);
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+        }
+
+        .filter-group:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+            margin-bottom: 0;
+        }
+
+        .filter-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Search input */
+        .search-wrapper {
+            position: relative;
+        }
+
+        .search-wrapper input {
+            background: var(--bg-glass);
+            border: 1px solid var(--border-glass);
+            border-radius: 12px;
+            color: var(--text-main);
+            padding: 12px 16px 12px 42px;
+            font-size: 14px;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .search-wrapper input:focus {
+            outline: none;
+            border-color: var(--accent-cyan);
+            background: var(--bg-secondary);
+            box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.15);
+        }
+
+        .search-wrapper i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        /* Custom Checkboxes & Radios */
+        .custom-check {
+            display: block;
+            position: relative;
+            padding-left: 28px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            color: var(--text-muted);
+            user-select: none;
+            transition: color 0.2s ease;
+        }
+
+        .custom-check:hover {
+            color: var(--text-main);
+        }
+
+        .custom-check input {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+            height: 0;
+            width: 0;
+        }
+
+        .checkmark {
+            position: absolute;
+            top: 2px;
+            left: 0;
+            height: 18px;
+            width: 18px;
+            background-color: var(--bg-glass);
+            border: 1px solid var(--border-glass);
+            border-radius: 5px;
+            transition: all 0.2s ease;
+        }
+
+        .custom-check input:checked ~ .checkmark {
+            background-color: var(--accent-indigo);
+            border-color: var(--accent-indigo);
+        }
+
+        .checkmark:after {
+            content: "";
+            position: absolute;
+            display: none;
+        }
+
+        .custom-check input:checked ~ .checkmark:after {
+            display: block;
+        }
+
+        .custom-check .checkmark:after {
+            left: 6px;
+            top: 2px;
+            width: 5px;
+            height: 10px;
+            border: solid #ffffff;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+
+        /* Budget Slider */
+        .range-slider-value {
+            font-weight: 700;
+            color: var(--accent-cyan);
+        }
+
+        .form-range::-webkit-slider-thumb {
+            background: var(--accent-cyan);
+        }
+
+        .form-range::-webkit-slider-thumb:active {
+            background: var(--accent-cyan-hover);
+        }
+
+        /* Header controls */
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .results-count {
+            font-size: 15px;
+            color: var(--text-muted);
+        }
+
+        .sort-select {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-glass);
+            color: var(--text-main);
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-size: 14px;
+            outline: none;
+            cursor: pointer;
+            transition: border 0.3s ease;
+        }
+
+        .sort-select:focus {
+            border-color: var(--accent-cyan);
+        }
+
+        /* Car Grid Layout */
+        .car-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-glass);
+            border-radius: 24px;
+            overflow: hidden;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            cursor: pointer;
+        }
+
+        .car-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(99, 102, 241, 0.3);
+            box-shadow: 0 12px 30px rgba(99, 102, 241, 0.1);
+        }
+
+        .car-img-wrapper {
+            position: relative;
+            height: 200px;
+            overflow: hidden;
+            background: #0f111a;
+        }
+
+        .car-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .car-card:hover .car-img {
+            transform: scale(1.08);
+        }
+
+        .car-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(6, 7, 10, 0.85);
+            backdrop-filter: blur(8px);
+            border: 1px solid var(--border-glass);
+            color: var(--accent-cyan);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .car-rating-badge {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: rgba(99, 102, 241, 0.9);
+            color: #ffffff;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .car-details {
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .car-title {
+            font-size: 22px;
+            margin-bottom: 6px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .car-brand {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .car-specs {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-glass);
+        }
+
+        .spec-item {
+            font-size: 13px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .spec-item i {
+            color: var(--accent-cyan);
+            width: 16px;
+            text-align: center;
+        }
+
+        .car-price-row {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            margin-top: auto;
+        }
+
+        .price-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: block;
+        }
+
+        .price-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .price-value span {
+            font-size: 13px;
+            font-weight: 400;
+            color: var(--text-muted);
+        }
+
+        /* Buttons */
+        .btn-book {
+            background: linear-gradient(135deg, var(--accent-indigo), var(--accent-cyan));
+            color: #ffffff !important;
+            font-weight: 600;
+            border: none;
+            border-radius: 12px;
+            padding: 10px 18px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+            font-size: 14px;
+        }
+
+        .btn-book:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(6, 182, 212, 0.4);
+            background: linear-gradient(135deg, var(--accent-indigo-hover), var(--accent-cyan-hover));
+        }
+
+        .btn-unavailable {
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-glass);
+            color: var(--text-muted) !important;
+            border-radius: 12px;
+            padding: 10px 18px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .btn-reset {
+            background: var(--bg-glass);
+            border: 1px solid var(--border-glass);
+            color: var(--text-main);
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 10px;
+            width: 100%;
+            transition: all 0.2s ease;
+        }
+
+        .btn-reset:hover {
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--accent-cyan);
+            border-color: var(--accent-indigo);
+        }
+
+        /* Custom Modal Styling */
+        .modal-content {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-glass);
+            border-radius: 28px;
+            color: var(--text-main);
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+        }
+
+        .modal-header {
+            border-bottom: 1px solid var(--border-glass);
+            padding: 24px;
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        .modal-footer {
+            border-top: 1px solid var(--border-glass);
+            padding: 24px;
+        }
+
+        .modal-car-img {
+            width: 100%;
+            height: 280px;
+            object-fit: cover;
+            border-radius: 18px;
+            margin-bottom: 24px;
+            background: #0f111a;
+        }
+
+        .modal-spec-badge {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-glass);
+            border-radius: 14px;
+            padding: 14px;
+            text-align: center;
+        }
+
+        .modal-spec-badge i {
+            color: var(--accent-cyan);
+            font-size: 20px;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .modal-spec-badge span {
+            font-size: 12px;
+            color: var(--text-muted);
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        .modal-spec-badge strong {
+            font-size: 14px;
+            color: var(--text-main);
+        }
+
+        .btn-close-custom {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-glass);
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-main);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-close-custom:hover {
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--accent-cyan);
+        }
+
+        /* Theme Toggle Button & Custom Spinner */
+        .btn-theme-toggle {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 18px;
+            padding: 8px;
+            cursor: pointer;
+            transition: color 0.3s ease, transform 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-theme-toggle:hover {
+            color: var(--accent-cyan);
+            transform: rotate(15deg);
+        }
+
+        .custom-spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid rgba(6, 182, 212, 0.1);
+            border-top: 4px solid var(--accent-cyan);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Silent Seeder Loader (Floating Toast) -->
+<div id="seederLoader" class="position-fixed bottom-0 end-0 m-4 p-3 d-none" style="z-index: 1050; background: rgba(13, 14, 21, 0.95); border: 1px solid var(--border-glass); border-radius: 16px; backdrop-filter: blur(15px); width: 320px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+    <div class="d-flex align-items-center gap-3">
+        <div class="spinner-border text-info spinner-border-sm" role="status"></div>
+        <div>
+            <h6 class="mb-1 text-white" style="font-size: 14px; font-family: var(--font-display);">Synchronizing Cars...</h6>
+            <p class="mb-0 text-muted" style="font-size: 12px;">Seeding expanded 120 cars in background.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+    <div class="container">
+        <a class="navbar-brand" href="../index.html">EliteCars</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menu" aria-controls="menu" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="menu">
+            <ul class="navbar-nav ms-auto align-items-center">
+                <li class="nav-item">
+                    <a class="nav-link" href="../index.html">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="#">Cars</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="../index.html#why-us">Why Choose Us</a>
+                </li>
+                <li class="nav-item ms-lg-3">
+                    <button id="themeToggle" class="btn-theme-toggle" title="Toggle Light/Dark Theme">
+                        <i class="fa-solid fa-moon"></i>
+                    </button>
+                </li>
+                <li class="nav-item ms-lg-3 mt-3 mt-lg-0">
+                    <a class="btn btn-gold" href="login.html">Sign In</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Hero Section -->
+<section class="dashboard-hero">
+    <div>
+        <h1>Explore Our Premium Cars</h1>
+        <p>A handpicked selection of 120 high-performance vehicles waiting for your command.</p>
+    </div>
+</section>
+
+<!-- Main Container -->
+<div class="container py-5">
+    <div class="row">
+        <!-- Sidebar Filters -->
+        <div class="col-lg-3">
+            <div class="filter-sidebar">
+                <!-- Search -->
+                <div class="filter-group">
+                    <div class="search-wrapper">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="searchInput" placeholder="Search car name/model...">
+                    </div>
+                </div>
+
+                <!-- Category -->
+                <div class="filter-group">
+                    <div class="filter-label">Category</div>
+                    <label class="custom-check">All Categories
+                        <input type="radio" name="categoryFilter" value="all" checked>
+                        <span class="checkmark" style="border-radius: 50%;"></span>
+                    </label>
+                    <label class="custom-check">Premium Luxury
+                        <input type="radio" name="categoryFilter" value="Premium">
+                        <span class="checkmark" style="border-radius: 50%;"></span>
+                    </label>
+                    <label class="custom-check">Elite SUVs
+                        <input type="radio" name="categoryFilter" value="SUV">
+                        <span class="checkmark" style="border-radius: 50%;"></span>
+                    </label>
+                    <label class="custom-check">Futuristic Electric
+                        <input type="radio" name="categoryFilter" value="Electric">
+                        <span class="checkmark" style="border-radius: 50%;"></span>
+                    </label>
+                    <label class="custom-check">Budget Friendly
+                        <input type="radio" name="categoryFilter" value="Budget">
+                        <span class="checkmark" style="border-radius: 50%;"></span>
+                    </label>
+                </div>
+
+                <!-- Transmission -->
+                <div class="filter-group">
+                    <div class="filter-label">Transmission</div>
+                    <label class="custom-check">Automatic
+                        <input type="checkbox" id="transAuto" value="Automatic" checked>
+                        <span class="checkmark"></span>
+                    </label>
+                    <label class="custom-check">Manual
+                        <input type="checkbox" id="transManual" value="Manual" checked>
+                        <span class="checkmark"></span>
+                    </label>
+                </div>
+
+                <!-- Fuel Type -->
+                <div class="filter-group">
+                    <div class="filter-label">Fuel Type</div>
+                    <label class="custom-check">Petrol
+                        <input type="checkbox" id="fuelPetrol" value="Petrol" checked>
+                        <span class="checkmark"></span>
+                    </label>
+                    <label class="custom-check">Diesel
+                        <input type="checkbox" id="fuelDiesel" value="Diesel" checked>
+                        <span class="checkmark"></span>
+                    </label>
+                    <label class="custom-check">Electric
+                        <input type="checkbox" id="fuelElectric" value="Electric" checked>
+                        <span class="checkmark"></span>
+                    </label>
+                </div>
+
+                <!-- Rental Dates -->
+                <div class="filter-group">
+                    <div class="filter-label">Rental Dates</div>
+                    <div class="mb-3">
+                        <label class="form-label text-muted mb-1" style="font-size: 11px; text-transform: uppercase;">Pickup Date</label>
+                        <input type="date" id="filterPickupDate" class="form-control" style="background: var(--bg-glass); border: 1px solid var(--border-glass); color: var(--text-main); border-radius: 12px; font-size: 13px; padding: 10px;">
+                    </div>
+                    <div class="mb-1">
+                        <label class="form-label text-muted mb-1" style="font-size: 11px; text-transform: uppercase;">Return Date</label>
+                        <input type="date" id="filterReturnDate" class="form-control" style="background: var(--bg-glass); border: 1px solid var(--border-glass); color: var(--text-main); border-radius: 12px; font-size: 13px; padding: 10px;">
+                    </div>
+                </div>
+
+                <!-- Price Slider -->
+                <div class="filter-group">
+                    <div class="filter-label">
+                        <span>Max Price/Day</span>
+                        <span class="range-slider-value">₹<span id="priceVal">25000</span></span>
+                    </div>
+                    <input type="range" class="form-range" id="priceRange" min="500" max="25000" step="500" value="25000">
+                </div>
+
+                <!-- Reset -->
+                <button class="btn btn-reset" onclick="resetAllFilters()"><i class="fa-solid fa-arrow-rotate-left me-2"></i> Reset Filters</button>
+            </div>
+        </div>
+
+        <!-- Car Listings -->
+        <div class="col-lg-9">
+            <!-- Results Header Controls -->
+            <div class="results-header">
+                <div class="results-count" id="resultsCount">Loading vehicles...</div>
+                <div>
+                    <select class="sort-select" id="sortSelect">
+                        <option value="recommended">Sort by: Recommended</option>
+                        <option value="priceAsc">Price: Low to High</option>
+                        <option value="priceDesc">Price: High to Low</option>
+                        <option value="ratingDesc">Highest Rated</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Single Grid Container -->
+            <div id="carsGrid" class="row g-4">
+                <!-- Spinner loader -->
+                <div class="col-12 d-flex flex-column align-items-center justify-content-center py-5" style="min-height: 350px;">
+                    <div class="custom-spinner mb-3"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Details Modal -->
+<div class="modal fade" id="carDetailsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header d-flex justify-content-between align-items-center">
+                <h4 class="modal-title" id="modalCarName">Car Details</h4>
+                <div class="btn-close-custom" data-bs-dismiss="modal"><i class="fa-solid fa-xmark"></i></div>
+            </div>
+            <div class="modal-body">
+                <img src="" id="modalCarImg" class="modal-car-img" alt="Car Image">
+                
+                <div class="row g-3 mb-4">
+                    <div class="col-6 col-sm-3">
+                        <div class="modal-spec-badge">
+                            <i class="fa-solid fa-chair"></i>
+                            <span>Seats</span>
+                            <strong id="modalSeats">5 Seats</strong>
+                        </div>
+                    </div>
+                    <div class="col-6 col-sm-3">
+                        <div class="modal-spec-badge">
+                            <i class="fa-solid fa-gears"></i>
+                            <span>Gearbox</span>
+                            <strong id="modalTrans">Automatic</strong>
+                        </div>
+                    </div>
+                    <div class="col-6 col-sm-3">
+                        <div class="modal-spec-badge">
+                            <i class="fa-solid fa-gas-pump"></i>
+                            <span>Fuel Type</span>
+                            <strong id="modalFuel">Electric</strong>
+                        </div>
+                    </div>
+                    <div class="col-6 col-sm-3">
+                        <div class="modal-spec-badge">
+                            <i class="fa-solid fa-road"></i>
+                            <span>Mileage</span>
+                            <strong id="modalMileage">600 km</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <h5 class="text-info mb-2" style="font-family: var(--font-display);">Description</h5>
+                <p id="modalDesc" class="text-muted" style="line-height: 1.6; font-size: 15px;">Detailed description here.</p>
+            </div>
+            <div class="modal-footer d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="price-label">Rental Rate</span>
+                    <div class="price-value" style="font-size: 26px;">₹<span id="modalPrice">0</span><span style="font-size: 16px;">/day</span></div>
+                </div>
+                <div id="modalActionBtnWrapper">
+                    <button class="btn btn-book btn-lg px-4 py-3">Book Now</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../js/fleet-catalog.js"></script>
+<script>
+    let carsData = [];
+
+    // Offline & Empty Database Fallback mapping helper
+    function getLocalCatalogMapped() {
+        return FLEET_CARS.map((car, idx) => ({
+            ...car,
+            carId: idx + 1,
+            availability: "Available"
+        }));
+    }
+
+    // Fetch Cars with date-based filters from DB
+    function fetchFilteredCarsFromDB() {
+        const pickup = document.getElementById("filterPickupDate").value;
+        const ret = document.getElementById("filterReturnDate").value;
+        
+        let url = "../viewCars";
+        if (pickup && ret) {
+            url += `?pickupDate=${pickup}&returnDate=${ret}`;
+        }
+
+        fetch(url)
+        .then(response => {
+            if (!response.ok) throw new Error();
+            return response.json();
+        })
+        .then(data => {
+            handleCarData(data);
+        })
+        .catch(() => {
+            // Check fallback legacy url
+            let fallbackUrl = "http://localhost:8080/EliteCars/viewCars";
+            if (pickup && ret) {
+                fallbackUrl += `?pickupDate=${pickup}&returnDate=${ret}`;
+            }
+            fetch(fallbackUrl)
+            .then(response => response.json())
+            .then(data => {
+                handleCarData(data);
+            })
+            .catch(() => {
+                console.log("[Fallback] Offline mode active. Displaying local catalogue.");
+            });
+        });
+    }
+
+    // Initial Fetch & Seed
+    function loadAndSyncCars() {
+        // Load local catalog immediately so page is never empty
+        carsData = getLocalCatalogMapped();
+        enrichCarsData();
+        applyFiltersAndRender();
+
+        fetchFilteredCarsFromDB();
+    }
+
+    function handleCarData(data) {
+        // Handle cases where DB has zero cars
+        const dbCars = data || [];
+        const existingKeys = new Set(dbCars.map(c => `${c.brand.toLowerCase()}::${c.carName.toLowerCase()}`));
+        const missingCount = FLEET_CARS.filter(c => !existingKeys.has(`${c.brand.toLowerCase()}::${c.carName.toLowerCase()}`)).length;
+        
+        if (missingCount > 0) {
+            // Show background sync status bar
+            document.getElementById("seederLoader").classList.remove("d-none");
+            seedMissingCars(dbCars, () => {
+                // Completed seeding: hide status bar and fetch from database
+                document.getElementById("seederLoader").classList.add("d-none");
+                fetch("../viewCars")
+                .then(res => res.json())
+                .then(syncedData => {
+                    if (syncedData && syncedData.length > 0) {
+                        carsData = syncedData;
+                    } else {
+                        carsData = getLocalCatalogMapped();
+                    }
+                    enrichCarsData();
+                    applyFiltersAndRender();
+                })
+                .catch(() => {
+                    // Seeding failed to verify, keep local or DB list
+                    if (dbCars.length > 0) {
+                        carsData = dbCars;
+                    } else {
+                        carsData = getLocalCatalogMapped();
+                    }
+                    enrichCarsData();
+                    applyFiltersAndRender();
+                });
+            });
+        } else {
+            carsData = dbCars;
+            enrichCarsData();
+            applyFiltersAndRender();
+        }
+    }
+
+    // Enrich DB models with client catalog properties
+    function enrichCarsData() {
+        carsData.forEach(car => {
+            const catalogCar = FLEET_CARS.find(c => c.carName.toLowerCase() === car.carName.toLowerCase() && c.brand.toLowerCase() === car.brand.toLowerCase());
+            if (catalogCar) {
+                car.seats = catalogCar.seats;
+                car.doors = catalogCar.doors;
+                car.mileage = catalogCar.mileage;
+                car.rating = catalogCar.rating;
+                car.ratingCount = catalogCar.ratingCount;
+                car.baggage = catalogCar.baggage;
+                car.description = catalogCar.description;
+            } else {
+                car.seats = 5;
+                car.doors = 4;
+                car.mileage = "14.8 km/l";
+                car.rating = 4.5;
+                car.ratingCount = 18;
+                car.baggage = 2;
+                car.description = "A premium luxury rental vehicle, inspected and detailed to guarantee pristine performance and showroom finish.";
+            }
+        });
+    }
+
+    // Setup Event Listeners for Filters
+    document.getElementById("searchInput").addEventListener("input", applyFiltersAndRender);
+    document.querySelectorAll("input[name='categoryFilter']").forEach(el => el.addEventListener("change", applyFiltersAndRender));
+    document.getElementById("transAuto").addEventListener("change", applyFiltersAndRender);
+    document.getElementById("transManual").addEventListener("change", applyFiltersAndRender);
+    document.getElementById("fuelPetrol").addEventListener("change", applyFiltersAndRender);
+    document.getElementById("fuelDiesel").addEventListener("change", applyFiltersAndRender);
+    document.getElementById("fuelElectric").addEventListener("change", applyFiltersAndRender);
+    
+    const slider = document.getElementById("priceRange");
+    slider.addEventListener("input", (e) => {
+        document.getElementById("priceVal").textContent = parseInt(e.target.value).toLocaleString();
+        applyFiltersAndRender();
+    });
+    
+    document.getElementById("sortSelect").addEventListener("change", applyFiltersAndRender);
+
+    function resetAllFilters() {
+        document.getElementById("searchInput").value = "";
+        document.querySelector("input[name='categoryFilter'][value='all']").checked = true;
+        document.getElementById("transAuto").checked = true;
+        document.getElementById("transManual").checked = true;
+        document.getElementById("fuelPetrol").checked = true;
+        document.getElementById("fuelDiesel").checked = true;
+        document.getElementById("fuelElectric").checked = true;
+        slider.value = 25000;
+        document.getElementById("priceVal").textContent = "25,000";
+        document.getElementById("sortSelect").value = "recommended";
+        
+        // Reset dates
+        document.getElementById("filterPickupDate").value = "";
+        document.getElementById("filterReturnDate").value = "";
+        sessionStorage.removeItem("pickupDate");
+        sessionStorage.removeItem("returnDate");
+
+        fetchFilteredCarsFromDB();
+    }
+
+    function applyFiltersAndRender() {
+        const query = document.getElementById("searchInput").value.toLowerCase().trim();
+        const category = document.querySelector("input[name='categoryFilter']:checked").value;
+        const showAuto = document.getElementById("transAuto").checked;
+        const showManual = document.getElementById("transManual").checked;
+        const showPetrol = document.getElementById("fuelPetrol").checked;
+        const showDiesel = document.getElementById("fuelDiesel").checked;
+        const showElectric = document.getElementById("fuelElectric").checked;
+        const maxPrice = parseFloat(slider.value);
+        const sortBy = document.getElementById("sortSelect").value;
+
+        // Apply filters
+        let filtered = carsData.filter(car => {
+            const matchesText = car.carName.toLowerCase().includes(query) || car.brand.toLowerCase().includes(query) || car.model.includes(query);
+            const matchesCategory = category === "all" || car.category === category;
+            const matchesTrans = (showAuto && car.transmission === "Automatic") || (showManual && car.transmission === "Manual");
+            const matchesFuel = (showPetrol && car.fuelType === "Petrol") || (showDiesel && car.fuelType === "Diesel") || (showElectric && car.fuelType === "Electric");
+            const matchesPrice = car.pricePerDay <= maxPrice;
+
+            return matchesText && matchesCategory && matchesTrans && matchesFuel && matchesPrice;
+        });
+
+        // Apply sorting
+        if (sortBy === "priceAsc") {
+            filtered.sort((a, b) => a.pricePerDay - b.pricePerDay);
+        } else if (sortBy === "priceDesc") {
+            filtered.sort((a, b) => b.pricePerDay - a.pricePerDay);
+        } else if (sortBy === "ratingDesc") {
+            filtered.sort((a, b) => b.rating - a.rating);
+        }
+
+        renderGrid(filtered);
+    }
+
+    function renderGrid(cars) {
+        const grid = document.getElementById("carsGrid");
+        document.getElementById("resultsCount").textContent = `Showing ${cars.length} vehicle${cars.length !== 1 ? 's' : ''}`;
+
+        if (cars.length === 0) {
+            grid.innerHTML = `
+                <div class="col-12 text-center py-5">
+                    <p class="text-muted fs-5"><i class="fa-regular fa-face-frown me-2"></i> No vehicles found matching the active filters.</p>
+                </div>`;
+            return;
+        }
+
+        let html = "";
+        cars.forEach(car => {
+            const isAvailable = car.availability === "Available";
+            const imageUrl = car.image.startsWith("http") ? car.image : `../images/${car.image}`;
+            
+            html += `
+            <div class="col-md-6 col-lg-4">
+                <div class="car-card" onclick="openDetailsModal(${car.carId})">
+                    <div class="car-img-wrapper">
+                        <img src="${imageUrl}" class="car-img" alt="${car.carName}" onerror="this.src='https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?q=80&w=600'">
+                        <span class="car-badge">${car.category}</span>
+                        <div class="car-rating-badge">
+                            <i class="fa-solid fa-star"></i> ${car.rating.toFixed(1)}
+                        </div>
+                    </div>
+                    <div class="car-details">
+                        <h3 class="car-title">${car.carName}</h3>
+                        <div class="car-brand">${car.brand} • ${car.model}</div>
+                        
+                        <div class="car-specs">
+                            <div class="spec-item">
+                                <i class="fa-solid fa-gas-pump"></i> ${car.fuelType}
+                            </div>
+                            <div class="spec-item">
+                                <i class="fa-solid fa-gears"></i> ${car.transmission}
+                            </div>
+                            <div class="spec-item">
+                                <i class="fa-solid fa-chair"></i> ${car.seats} Seats
+                            </div>
+                            <div class="spec-item">
+                                <i class="fa-solid fa-gauge"></i> ${car.mileage.split(' ')[0]} ${car.mileage.split(' ')[1] || ''}
+                            </div>
+                        </div>
+
+                        <div class="car-price-row" onclick="event.stopPropagation()">
+                            <div>
+                                <span class="price-label">Price per day</span>
+                                <div class="price-value">₹${car.pricePerDay.toLocaleString()}<span>/day</span></div>
+                            </div>
+                            <div>
+                                ${isAvailable ? 
+                                    `<a href="login.html?redirect=book-car.html&carId=${car.carId}&price=${car.pricePerDay}&carName=${encodeURIComponent(car.carName)}" class="btn btn-book">Book Now</a>` : 
+                                    `<button class="btn btn-unavailable" disabled>Unavailable</button>`
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+        });
+        grid.innerHTML = html;
+    }
+
+    // Modal Trigger
+    let bootstrapModal;
+    
+    function openDetailsModal(carId) {
+        const car = carsData.find(c => c.carId === carId);
+        if (!car) return;
+
+        document.getElementById("modalCarName").textContent = `${car.brand} ${car.carName} (${car.model})`;
+        document.getElementById("modalCarImg").src = car.image.startsWith("http") ? car.image : `../images/${car.image}`;
+        document.getElementById("modalCarImg").onerror = function() {
+            this.src = 'https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?q=80&w=600';
+        };
+        document.getElementById("modalSeats").textContent = `${car.seats} Seats`;
+        document.getElementById("modalTrans").textContent = car.transmission;
+        document.getElementById("modalFuel").textContent = car.fuelType;
+        document.getElementById("modalMileage").textContent = car.mileage;
+        document.getElementById("modalDesc").textContent = car.description;
+        document.getElementById("modalPrice").textContent = car.pricePerDay.toLocaleString();
+
+        const actionWrapper = document.getElementById("modalActionBtnWrapper");
+        if (car.availability === "Available") {
+            actionWrapper.innerHTML = `<a href="login.html?redirect=book-car.html&carId=${car.carId}&price=${car.pricePerDay}&carName=${encodeURIComponent(car.carName)}" class="btn btn-book btn-lg px-4 py-3">Book This Vehicle</a>`;
+        } else {
+            actionWrapper.innerHTML = `<button class="btn btn-unavailable btn-lg px-4 py-3" disabled>Currently Unavailable</button>`;
+        }
+
+        bootstrapModal.show();
+    }
+
+    // Load cars on start
+    window.addEventListener("DOMContentLoaded", () => {
+        // Instantiate Bootstrap modal after DOM is fully loaded
+        bootstrapModal = new bootstrap.Modal(document.getElementById('carDetailsModal'));
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const catParam = urlParams.get('category');
+        if (catParam) {
+            const radio = document.querySelector(`input[name="categoryFilter"][value="${catParam}"]`);
+            if (radio) {
+                radio.checked = true;
+            }
+        }
+
+        // Auto-fill and set date inputs from sessionStorage
+        const today = new Date().toISOString().split('T')[0];
+        const pickupInput = document.getElementById("filterPickupDate");
+        const returnInput = document.getElementById("filterReturnDate");
+        pickupInput.setAttribute('min', today);
+        returnInput.setAttribute('min', today);
+        
+        const savedPickup = sessionStorage.getItem('pickupDate');
+        const savedReturn = sessionStorage.getItem('returnDate');
+        if (savedPickup && savedPickup >= today) {
+            pickupInput.value = savedPickup;
+            returnInput.setAttribute('min', savedPickup);
+        }
+        if (savedReturn && savedReturn >= today && (!savedPickup || savedReturn >= savedPickup)) {
+            returnInput.value = savedReturn;
+        }
+
+        // Register date filter event listeners
+        pickupInput.addEventListener("change", (e) => {
+            const pickup = e.target.value;
+            returnInput.setAttribute('min', pickup);
+            if (returnInput.value && returnInput.value < pickup) {
+                returnInput.value = pickup;
+            }
+            sessionStorage.setItem("pickupDate", pickup);
+            sessionStorage.setItem("returnDate", returnInput.value);
+            fetchFilteredCarsFromDB();
+        });
+
+        returnInput.addEventListener("change", (e) => {
+            const ret = e.target.value;
+            sessionStorage.setItem("returnDate", ret);
+            fetchFilteredCarsFromDB();
+        });
+
+        loadAndSyncCars();
+
+        // Theme Toggle
+        const themeToggleBtn = document.getElementById('themeToggle');
+        const currentTheme = localStorage.getItem('theme') || 'dark';
+
+        if (currentTheme === 'light') {
+            document.documentElement.setAttribute('data-theme', 'light');
+            if (themeToggleBtn) {
+                themeToggleBtn.innerHTML = '<i class="fa-solid fa-sun"></i>';
+            }
+        } else {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            if (themeToggleBtn) {
+                themeToggleBtn.innerHTML = '<i class="fa-solid fa-moon"></i>';
+            }
+        }
+
+        if (themeToggleBtn) {
+            themeToggleBtn.addEventListener('click', () => {
+                let theme = document.documentElement.getAttribute('data-theme');
+                if (theme === 'light') {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                    localStorage.setItem('theme', 'dark');
+                    themeToggleBtn.innerHTML = '<i class="fa-solid fa-moon"></i>';
+                } else {
+                    document.documentElement.setAttribute('data-theme', 'light');
+                    localStorage.setItem('theme', 'light');
+                    themeToggleBtn.innerHTML = '<i class="fa-solid fa-sun"></i>';
+                }
+            });
+        }
+    });
+</script>
+
+</body>
+</html>
