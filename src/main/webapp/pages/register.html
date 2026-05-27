@@ -350,13 +350,23 @@
     if (errorType) {
         const errorAlert = document.createElement("div");
         errorAlert.className = "custom-error-alert";
-        let message = "<i class='fa-solid fa-triangle-exclamation'></i> Registration failed. Please try again.";
+        errorAlert.style.flexDirection = "column";
+        errorAlert.style.alignItems = "center";
+        
+        let iconHtml = "<i class='fa-solid fa-triangle-exclamation'></i> ";
+        let messageText = "Registration failed. Please try again.";
+        
         if (errorType === "duplicate") {
-            message = "<i class='fa-solid fa-triangle-exclamation'></i> This email is already registered.";
+            messageText = "This email is already registered.";
         } else if (errorType === "db") {
-            message = "<i class='fa-solid fa-triangle-exclamation'></i> Database connection error. Please verify configurations.";
+            const rawMsg = params.get("msg");
+            messageText = "Database connection error. Please verify configurations.";
+            if (rawMsg) {
+                messageText += "\nDetails: " + rawMsg;
+            }
         }
-        errorAlert.innerHTML = message;
+        
+        errorAlert.innerHTML = iconHtml + "<span style='text-align: center; white-space: pre-line;'>" + messageText.replace(/</g, "&lt;").replace(/>/g, "&gt;") + "</span>";
         document.querySelector("form").prepend(errorAlert);
     }
 

@@ -53,7 +53,11 @@ public class RegisterServlet extends HttpServlet {
         }
 
         if (testCon == null) {
-            response.sendRedirect("pages/register.html?error=db");
+            String errMsg = com.org.db.DBConnection.lastError;
+            if (errMsg == null) {
+                errMsg = "Connection failed";
+            }
+            response.sendRedirect("pages/register.html?error=db&msg=" + java.net.URLEncoder.encode(errMsg, "UTF-8"));
             return;
         }
 

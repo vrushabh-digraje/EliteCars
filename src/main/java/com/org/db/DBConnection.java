@@ -6,12 +6,13 @@ import java.sql.DriverManager;
 public class DBConnection {
 
     private static Connection con;
+    public static String lastError = null;
 
     public static Connection getConnection() {
 
         try {
 
-            if(con == null) {
+            if(con == null || con.isClosed()) {
 
                 Class.forName(
                 "com.mysql.cj.jdbc.Driver");
@@ -31,6 +32,7 @@ public class DBConnection {
                 }
 
                 con = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
+                lastError = null;
 
                 System.out.println(
                 "Database Connected");
@@ -38,8 +40,9 @@ public class DBConnection {
             }
 
         } catch(Exception e) {
-
+            lastError = e.getMessage();
             e.printStackTrace();
+            con = null; // Ensure con is null on failure so next attempt retries connection
         }
 
         return con;
