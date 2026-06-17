@@ -40,7 +40,7 @@ public class GoogleLoginServlet extends HttpServlet {
             conn.setReadTimeout(5000);
 
             // Add standard User-Agent header to avoid bot blocking
-            conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36");
+//            conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36");
 
             int responseCode = conn.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_OK) {
