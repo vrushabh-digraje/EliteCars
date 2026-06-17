@@ -16,15 +16,21 @@ public class DBConnection {
                 Class.forName(
                 "com.mysql.cj.jdbc.Driver");
 
-                con = DriverManager.getConnection(
+                String dbUrl = System.getenv("DB_URL");
+                String dbUser = System.getenv("DB_USER");
+                String dbPassword = System.getenv("DB_PASSWORD");
 
-                "jdbc:mysql://localhost:3306/car_rental",
+                if (dbUrl == null || dbUrl.isEmpty()) {
+                    dbUrl = "jdbc:mysql://localhost:3306/car_rental";
+                }
+                if (dbUser == null || dbUser.isEmpty()) {
+                    dbUser = "root";
+                }
+                if (dbPassword == null || dbPassword.isEmpty()) {
+                    dbPassword = "root";
+                }
 
-                "root",
-
-                "root"
-
-                );
+                con = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
 
                 System.out.println(
                 "Database Connected");
