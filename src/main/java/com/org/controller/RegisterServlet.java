@@ -45,24 +45,11 @@ public class RegisterServlet extends HttpServlet {
 
         user.setRole(role);
 
-        java.sql.Connection testCon = null;
-        try {
-            testCon = com.org.db.DBConnection.getConnection();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        UserDAO dao =
+                new UserDAO();
 
-        if (testCon == null) {
-            String errMsg = com.org.db.DBConnection.lastError;
-            if (errMsg == null) {
-                errMsg = "Connection failed";
-            }
-            response.sendRedirect("pages/register.html?error=db&msg=" + java.net.URLEncoder.encode(errMsg, "UTF-8"));
-            return;
-        }
-
-        UserDAO dao = new UserDAO();
-        boolean status = dao.registerUser(user);
+        boolean status =
+                dao.registerUser(user);
 
         response.setContentType("text/html");
 
@@ -243,7 +230,11 @@ public class RegisterServlet extends HttpServlet {
 
         	}else {
 
-            response.sendRedirect("pages/register.html?error=duplicate");
+            response.getWriter().println(
+
+            "<h2>Registration Failed</h2>"
+
+            );
 
         }
     }

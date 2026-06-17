@@ -47,7 +47,15 @@ public class AddCarServlet extends HttpServlet {
                 Double.parseDouble(
                 request.getParameter("pricePerDay"));
 
-        Part filePart = request.getPart("imageFile");
+        Part filePart = null;
+        String contentType = request.getContentType();
+        if (contentType != null && contentType.toLowerCase().contains("multipart/form-data")) {
+            try {
+                filePart = request.getPart("imageFile");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
         String fileName = "";
         if (filePart != null && filePart.getSize() > 0) {
             fileName = java.nio.file.Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
@@ -60,7 +68,7 @@ public class AddCarServlet extends HttpServlet {
             String filePath = deployPath + java.io.File.separator + fileName;
             filePart.write(filePath);
             try {
-                String srcPath = "D:\\CarRental\\src\\main\\webapp\\images";
+                String srcPath = "C:\\Users\\ASUS\\Desktop\\Projects\\CarRental\\src\\main\\webapp\\images";
                 java.io.File srcDir = new java.io.File(srcPath);
                 if (srcDir.exists()) {
                     String srcFilePath = srcPath + java.io.File.separator + fileName;

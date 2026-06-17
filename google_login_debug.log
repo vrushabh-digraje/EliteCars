@@ -1,0 +1,44 @@
+--- DEBUG LOG: Tue Jun 16 21:24:34 IST 2026 ---
+Google token verification succeeded but returned no email address: {  "iss": "https://accounts.google.com",  "azp": "304548761792-vo37nv52eh9cinkv8muagqrc8tgo2gi8.apps.googleusercontent.com",  "aud": "304548761792-vo37nv52eh9cinkv8muagqrc8tgo2gi8.apps.googleusercontent.com",  "sub": "117798461221050239332",  "email": "vrushabhdigraje01@gmail.com",  "email_verified": "true",  "nbf": "1781624966",  "name": "Vrushabh Digraje",  "picture": "https://lh3.googleusercontent.com/a/ACg8ocI1QKi2D4Xwo6TE8S9JL4_VUT5ieSXP6fxHt2RuwekMnRQA6w=s96-c",  "given_name": "Vrushabh",  "family_name": "Digraje",  "iat": "1781625266",  "exp": "1781628866",  "jti": "318c40bf5104b529cf1f070738a0209c8b06bd56",  "alg": "RS256",  "kid": "3035bb86d99f22e613467a6680825eeb0d8139a2",  "typ": "JWT"}
+----------------------------------------
+
+--- DEBUG LOG: Wed Jun 17 09:22:19 IST 2026 ---
+Google token verification succeeded but returned no email address: {  "iss": "https://accounts.google.com",  "azp": "304548761792-vo37nv52eh9cinkv8muagqrc8tgo2gi8.apps.googleusercontent.com",  "aud": "304548761792-vo37nv52eh9cinkv8muagqrc8tgo2gi8.apps.googleusercontent.com",  "sub": "117798461221050239332",  "email": "vrushabhdigraje01@gmail.com",  "email_verified": "true",  "nbf": "1781668035",  "name": "Vrushabh Digraje",  "picture": "https://lh3.googleusercontent.com/a/ACg8ocI1QKi2D4Xwo6TE8S9JL4_VUT5ieSXP6fxHt2RuwekMnRQA6w=s96-c",  "given_name": "Vrushabh",  "family_name": "Digraje",  "iat": "1781668335",  "exp": "1781671935",  "jti": "b01052bfdb3b4cc4bffe85d00ec4cbcd59a10046",  "alg": "RS256",  "kid": "3035bb86d99f22e613467a6680825eeb0d8139a2",  "typ": "JWT"}
+----------------------------------------
+
+--- DEBUG LOG: Wed Jun 17 09:24:01 IST 2026 ---
+Google token verification succeeded but returned no email address: {  "iss": "https://accounts.google.com",  "azp": "304548761792-vo37nv52eh9cinkv8muagqrc8tgo2gi8.apps.googleusercontent.com",  "aud": "304548761792-vo37nv52eh9cinkv8muagqrc8tgo2gi8.apps.googleusercontent.com",  "sub": "117798461221050239332",  "email": "vrushabhdigraje01@gmail.com",  "email_verified": "true",  "nbf": "1781668140",  "name": "Vrushabh Digraje",  "picture": "https://lh3.googleusercontent.com/a/ACg8ocI1QKi2D4Xwo6TE8S9JL4_VUT5ieSXP6fxHt2RuwekMnRQA6w=s96-c",  "given_name": "Vrushabh",  "family_name": "Digraje",  "iat": "1781668440",  "exp": "1781672040",  "jti": "d22d0e95485fbed354e88b9356643c4115fd6792",  "alg": "RS256",  "kid": "3035bb86d99f22e613467a6680825eeb0d8139a2",  "typ": "JWT"}
+----------------------------------------
+
+--- DEBUG LOG: Wed Jun 17 09:35:10 IST 2026 ---
+User successfully logged in via Google: vrushabhdigraje01@gmail.com
+----------------------------------------
+
+--- DEBUG LOG: Wed Jun 17 10:04:28 IST 2026 ---
+User successfully logged in via Google: vrushabhdigraje01@gmail.com
+----------------------------------------
+
+--- DEBUG LOG: Wed Jun 17 10:08:09 IST 2026 ---
+User successfully logged in via Google: vrushabhdigraje01@gmail.com
+----------------------------------------
+
+--- DEBUG LOG: Wed Jun 17 10:26:27 IST 2026 ---
+User successfully logged in via Google: vrushabhdigraje02@gmail.com
+----------------------------------------
+
+--- DEBUG LOG: Wed Jun 17 11:11:27 IST 2026 ---
+User successfully logged in via Google: vrushabhdigraje01@gmail.com
+----------------------------------------
+
+--- DEBUG LOG: Wed Jun 17 11:12:23 IST 2026 ---
+User successfully logged in via Google: vrushabhdigraje01@gmail.com
+----------------------------------------
+
+--- DEBUG LOG: Wed Jun 17 11:45:41 IST 2026 ---
+User successfully logged in via Google: vrushabhdigraje01@gmail.com
+----------------------------------------
+
+--- DEBUG LOG: Wed Jun 17 11:52:06 IST 2026 ---
+User successfully logged in via Google: vrushabhdigraje01@gmail.com
+----------------------------------------
+

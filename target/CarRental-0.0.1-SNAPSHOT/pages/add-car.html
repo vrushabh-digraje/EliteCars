@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>
+        (function() {
+            const theme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', theme);
+        })();
+    </script>
+    <meta charset="UTF-8">
+    <title>Add Vehicle - Admin Panel</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- CDNs -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-primary: #06070a; /* Midnight Obsidian */
+            --bg-secondary: #0d0e15; /* Carbon Deep Slate */
+            --bg-glass: rgba(255, 255, 255, 0.03);
+            --border-glass: rgba(255, 255, 255, 0.06);
+            --accent-indigo: #6366f1; /* Electric Indigo */
+            --accent-cyan: #06b6d4; /* Cyber Cyan */
+            --accent-indigo-hover: #4f46e5;
+            --accent-cyan-hover: #0891b2;
+            --text-main: #f8fafc; /* Slate-50 */
+            --text-muted: #94a3b8; /* Slate-400 */
+            --font-display: 'Plus Jakarta Sans', sans-serif;
+            --font-sans: 'Inter', sans-serif;
+        }
+
+        [data-theme="light"] {
+            --bg-primary: #f8fafc; /* Slate-50 */
+            --bg-secondary: #ffffff; /* White */
+            --bg-glass: rgba(0, 0, 0, 0.02);
+            --border-glass: rgba(0, 0, 0, 0.08);
+            --accent-indigo: #4f46e5; /* Indigo-600 */
+            --accent-cyan: #0891b2; /* Cyber Cyan-600 */
+            --accent-indigo-hover: #4338ca;
+            --accent-cyan-hover: #0e7490;
+            --text-main: #0f172a; /* Slate-900 */
+            --text-muted: #475569; /* Slate-600 */
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--bg-primary);
+            color: var(--text-main);
+            overflow-x: hidden;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: var(--font-display);
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .text-muted {
+            color: var(--text-muted) !important;
+        }
+
+        /* Sidebar styling */
+        .sidebar {
+            height: 100vh;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border-glass);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 260px;
+            padding: 30px 20px;
+            z-index: 100;
+        }
+
+        .sidebar-brand {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 40px;
+            padding: 0 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sidebar-brand span {
+            color: var(--accent-cyan);
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar-item {
+            margin-bottom: 8px;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            color: var(--text-muted);
+            text-decoration: none;
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-weight: 500;
+            font-size: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-link:hover, .sidebar-link.active {
+            background-color: rgba(6, 182, 212, 0.1);
+            color: var(--accent-cyan);
+        }
+
+        .sidebar-link.logout-link:hover {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+        }
+
+        /* Main Content wrapper */
+        .main-content {
+            margin-left: 260px;
+            padding: 45px;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* Form Container Box */
+        .form-box {
+            background: var(--bg-glass);
+            border: 1px solid var(--border-glass);
+            backdrop-filter: blur(15px);
+            padding: 40px;
+            border-radius: 24px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .form-box h2 {
+            font-size: 26px;
+            margin-bottom: 30px;
+            letter-spacing: -0.5px;
+            border-bottom: 1px solid var(--border-glass);
+            padding-bottom: 15px;
+        }
+
+        /* Form elements */
+        .form-label {
+            font-weight: 500;
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-control, .form-select {
+            background-color: var(--bg-glass);
+            border: 1px solid var(--border-glass);
+            color: var(--text-main);
+            border-radius: 12px;
+            padding: 12px 16px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .form-select {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23a1a1aa' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+        }
+
+        .form-control:focus, .form-select:focus {
+            background-color: var(--bg-glass);
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.15);
+            color: var(--text-main);
+        }
+
+        .form-control::placeholder {
+            color: var(--text-muted);
+            opacity: 0.5;
+        }
+
+        .form-select option {
+            background-color: var(--bg-secondary);
+            color: var(--text-main);
+        }
+
+        /* Indigo-Cyan Gradient CTA Button */
+        .btn-gold {
+            background: linear-gradient(135deg, var(--accent-indigo), var(--accent-cyan));
+            color: #ffffff !important;
+            font-weight: 600;
+            border: none;
+            border-radius: 12px;
+            padding: 14px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.2);
+            font-size: 16px;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-gold:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(6, 182, 212, 0.4);
+            background: linear-gradient(135deg, var(--accent-indigo-hover), var(--accent-cyan-hover));
+        }
+
+        /* Mobile Responsive adjustments */
+        @media(max-width: 991px) {
+            .sidebar {
+                width: 70px;
+                padding: 30px 10px;
+                align-items: center;
+            }
+            .sidebar-brand span, .sidebar-link span {
+                display: none;
+            }
+            .sidebar-brand {
+                padding: 0;
+                justify-content: center;
+            }
+            .main-content {
+                margin-left: 70px;
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<aside class="sidebar">
+    <div class="sidebar-brand" id="sidebarBrand">
+        <i class="fa-solid fa-gauge-high"></i>
+        <span id="sidebarBrandText">Admin<span>Panel</span></span>
+    </div>
+    
+    <ul class="sidebar-menu">
+        <li class="sidebar-item">
+            <a id="sidebarDashboardLink" href="admin-dashboard.html" class="sidebar-link">
+                <i class="fa-solid fa-chart-pie"></i>
+                <span>Dashboard</span>
+            </a>
+        </li>
+        <li class="sidebar-item">
+            <a href="#" class="sidebar-link active">
+                <i class="fa-solid fa-circle-plus"></i>
+                <span>Add Car</span>
+            </a>
+        </li>
+        <li class="sidebar-item">
+            <a href="#" class="sidebar-link">
+                <i class="fa-solid fa-car-side"></i>
+                <span>Manage Cars</span>
+            </a>
+        </li>
+        <li class="sidebar-item">
+            <a href="#" class="sidebar-link">
+                <i class="fa-solid fa-calendar-check"></i>
+                <span>Bookings</span>
+            </a>
+        </li>
+        <li class="sidebar-item">
+            <a href="#" class="sidebar-link">
+                <i class="fa-solid fa-wallet"></i>
+                <span>Payments</span>
+            </a>
+        </li>
+        <li class="sidebar-item mt-4">
+            <button id="themeToggle" class="sidebar-link" style="background: none; border: none; width: 100%; text-align: left; display: flex; align-items: center; gap: 14px;" title="Toggle Light/Dark Theme">
+                <i class="fa-solid fa-moon"></i>
+                <span>Theme Mode</span>
+            </button>
+        </li>
+        <li class="sidebar-item mt-4">
+            <a href="../index.html" class="sidebar-link logout-link">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                <span>Logout</span>
+            </a>
+        </li>
+    </ul>
+</aside>
+
+<!-- Main content panel -->
+<main class="main-content">
+    <div class="form-box">
+        <h2>Register New Vehicle</h2>
+        
+        <form action="../addCar" method="post" enctype="multipart/form-data">
+            <div class="row">
+                <!-- Car Name -->
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Car Name / Model</label>
+                    <input type="text" name="carName" class="form-control" placeholder="e.g. Model S, M5" required>
+                </div>
+                
+                <!-- Brand -->
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Brand / Manufacturer</label>
+                    <input type="text" name="brand" class="form-control" placeholder="e.g. Tesla, BMW" required>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- Model Year -->
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Model Year</label>
+                    <input type="text" name="model" class="form-control" placeholder="e.g. 2024" required>
+                </div>
+                
+                <!-- Category -->
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Category</label>
+                    <select name="category" class="form-select" required>
+                        <option value="" disabled selected>Select Category</option>
+                        <option value="Premium">Premium</option>
+                        <option value="SUV">SUV</option>
+                        <option value="Electric">Electric</option>
+                        <option value="Budget">Budget</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- Fuel Type -->
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Fuel Type</label>
+                    <select name="fuelType" class="form-select" required>
+                        <option value="Petrol">Petrol</option>
+                        <option value="Diesel">Diesel</option>
+                        <option value="Electric">Electric</option>
+                    </select>
+                </div>
+                
+                <!-- Transmission -->
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Transmission</label>
+                    <select name="transmission" class="form-select" required>
+                        <option value="Automatic">Automatic</option>
+                        <option value="Manual">Manual</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- Price Per Day -->
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Daily Price (INR)</label>
+                    <input type="number" name="pricePerDay" class="form-control" placeholder="₹ per day" required>
+                </div>
+                
+                <!-- Image Upload -->
+                <div class="col-md-6 mb-4">
+                    <label class="form-label">Upload Vehicle Image</label>
+                    <input type="file" name="imageFile" class="form-control" accept="image/*" required>
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn btn-gold w-100">Add Vehicle</button>
+        </form>
+    </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const themeToggleBtn = document.getElementById('themeToggle');
+        const currentTheme = localStorage.getItem('theme') || 'dark';
+
+        const updateThemeUI = (theme) => {
+            document.documentElement.setAttribute('data-theme', theme);
+            if (themeToggleBtn) {
+                const icon = themeToggleBtn.querySelector('i');
+                const text = themeToggleBtn.querySelector('span');
+                if (theme === 'light') {
+                    if (icon) icon.className = 'fa-solid fa-sun';
+                    if (text) text.textContent = 'Light Mode';
+                } else {
+                    if (icon) icon.className = 'fa-solid fa-moon';
+                    if (text) text.textContent = 'Dark Mode';
+                }
+            }
+        };
+
+        updateThemeUI(currentTheme);
+
+        if (themeToggleBtn) {
+            themeToggleBtn.addEventListener('click', () => {
+                let theme = document.documentElement.getAttribute('data-theme');
+                const newTheme = theme === 'light' ? 'dark' : 'light';
+                localStorage.setItem('theme', newTheme);
+                updateThemeUI(newTheme);
+            });
+        }
+
+        // Dynamically adjust sidebar based on user role
+        fetch("../getUser")
+        .then(res => {
+            if (!res.ok) throw new Error();
+            return res.json();
+        })
+        .then(user => {
+            if (user && user.role) {
+                const dashLink = document.getElementById("sidebarDashboardLink");
+                const brandText = document.getElementById("sidebarBrandText");
+                if (user.role.toLowerCase() === "owner") {
+                    if (dashLink) dashLink.href = "owner-dashboard.html";
+                    if (brandText) brandText.innerHTML = "Owner<span>Panel</span>";
+                }
+            }
+        })
+        .catch(err => console.log("Not logged in or unable to fetch user profile", err));
+    });
+</script>
+</body>
+</html>

@@ -329,4 +329,55 @@ public class CarDAO {
         }
         return list;
     }
+
+    // Update Car Details
+    public boolean updateCar(int carId, String carName, String brand, String model, String category, String fuelType, String transmission, double pricePerDay, String availability) {
+        boolean status = false;
+        try {
+            con = DBConnection.getConnection();
+            String sql = "UPDATE cars SET car_name=?, brand=?, model=?, category=?, fuel_type=?, transmission=?, price_per_day=?, availability=? WHERE car_id=?";
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setString(1, carName);
+            ps.setString(2, brand);
+            ps.setString(3, model);
+            ps.setString(4, category);
+            ps.setString(5, fuelType);
+            ps.setString(6, transmission);
+            ps.setDouble(7, pricePerDay);
+            ps.setString(8, availability);
+            ps.setInt(9, carId);
+            
+            int row = ps.executeUpdate();
+            if (row > 0) {
+                status = true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return status;
+    }
+
+    // Delete Car (and bypass foreign keys constraint safely)
+    public boolean deleteCar(int carId) {
+        boolean status = false;
+        try {
+            con = DBConnection.getConnection();
+            PreparedStatement ps1 = con.prepareStatement("SET FOREIGN_KEY_CHECKS=0");
+            ps1.executeUpdate();
+            
+            String sql = "DELETE FROM cars WHERE car_id=?";
+            PreparedStatement ps2 = con.prepareStatement(sql);
+            ps2.setInt(1, carId);
+            int row = ps2.executeUpdate();
+            if (row > 0) {
+                status = true;
+            }
+            
+            PreparedStatement ps3 = con.prepareStatement("SET FOREIGN_KEY_CHECKS=1");
+            ps3.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return status;
+    }
 }

@@ -297,4 +297,63 @@ public class BookingDAO {
         }
         return list;
     }
+
+    // Update Booking Dates and Total Amount
+    public boolean updateBookingDates(int bookingId, String pickupDate, String returnDate, double totalAmount) {
+        boolean success = false;
+        try {
+            con = DBConnection.getConnection();
+            String sql = "UPDATE bookings SET pickup_date=?, return_date=?, total_amount=? WHERE booking_id=?";
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setString(1, pickupDate);
+            ps.setString(2, returnDate);
+            ps.setDouble(3, totalAmount);
+            ps.setInt(4, bookingId);
+            int row = ps.executeUpdate();
+            if (row > 0) {
+                success = true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return success;
+    }
+
+    // Cancel Booking and make corresponding Car available again
+    public boolean cancelBooking(int bookingId) {
+        boolean success = false;
+        try {
+            con = DBConnection.getConnection();
+            
+            // Get booking to know the carId
+            String getBookingSql = "SELECT car_id FROM bookings WHERE booking_id=?";
+            PreparedStatement getPs = con.prepareStatement(getBookingSql);
+            getPs.setInt(1, bookingId);
+            ResultSet rs = getPs.executeQuery();
+            int carId = -1;
+            if (rs.next()) {
+                carId = rs.getInt("car_id");
+            }
+            
+            // Update booking status
+            String updateBookingSql = "UPDATE bookings SET status='Cancelled' WHERE booking_id=?";
+            PreparedStatement updateBPs = con.prepareStatement(updateBookingSql);
+            updateBPs.setInt(1, bookingId);
+            int rowsUpdated = updateBPs.executeUpdate();
+            
+            if (rowsUpdated > 0) {
+                success = true;
+                if (carId != -1) {
+                    // Make car available again
+                    String updateCarSql = "UPDATE cars SET availability='Available' WHERE car_id=?";
+                    PreparedStatement updateCPs = con.prepareStatement(updateCarSql);
+                    updateCPs.setInt(1, carId);
+                    updateCPs.executeUpdate();
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return success;
+    }
 }

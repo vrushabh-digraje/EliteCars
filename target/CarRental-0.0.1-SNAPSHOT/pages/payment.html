@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>
+        (function() {
+            const theme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', theme);
+        })();
+    </script>
+    <meta charset="UTF-8">
+    <title>Payment Gateway - EliteCars</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    
+    <!-- CDNs -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-primary: #06070a; /* Midnight Obsidian */
+            --bg-secondary: #0d0e15; /* Carbon Deep Slate */
+            --bg-glass: rgba(255, 255, 255, 0.03);
+            --border-glass: rgba(255, 255, 255, 0.06);
+            --accent-indigo: #6366f1; /* Electric Indigo */
+            --accent-cyan: #06b6d4; /* Cyber Cyan */
+            --accent-indigo-hover: #4f46e5;
+            --accent-cyan-hover: #0891b2;
+            --text-main: #f8fafc; /* Slate-50 */
+            --text-muted: #94a3b8; /* Slate-400 */
+            --font-display: 'Plus Jakarta Sans', sans-serif;
+            --font-sans: 'Inter', sans-serif;
+        }
+
+        [data-theme="light"] {
+            --bg-primary: #f8fafc; /* Slate-50 */
+            --bg-secondary: #ffffff; /* White */
+            --bg-glass: rgba(0, 0, 0, 0.02);
+            --border-glass: rgba(0, 0, 0, 0.08);
+            --accent-indigo: #4f46e5; /* Indigo-600 */
+            --accent-cyan: #0891b2; /* Cyber Cyan-600 */
+            --accent-indigo-hover: #4338ca;
+            --accent-cyan-hover: #0e7490;
+            --text-main: #0f172a; /* Slate-900 */
+            --text-muted: #475569; /* Slate-600 */
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--bg-primary);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 50px 20px;
+            position: relative;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .text-muted {
+            color: var(--text-muted) !important;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at center, rgba(6, 182, 212, 0.05) 0%, transparent 65%),
+                        url('https://images.unsplash.com/photo-1617788138017-80ad40651399?q=80&w=1920') no-repeat center center;
+            background-size: cover;
+            opacity: 0.12;
+            z-index: 0;
+        }
+
+        /* Floating Back Button */
+        .btn-back {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            z-index: 10;
+            font-size: 15px;
+        }
+
+        .btn-back:hover {
+            color: var(--accent-cyan);
+            transform: translateX(-3px);
+        }
+
+        .payment-container {
+            position: relative;
+            z-index: 1;
+            width: 950px;
+            background: var(--bg-glass);
+            border: 1px solid var(--border-glass);
+            backdrop-filter: blur(20px);
+            padding: 45px;
+            border-radius: 28px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* 3D Virtual Card Container */
+        .card-preview-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            perspective: 1000px;
+        }
+
+        .virtual-card-inner {
+            width: 380px;
+            height: 230px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .virtual-card-inner.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .virtual-card-front, .virtual-card-back {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            backface-visibility: hidden;
+            border-radius: 20px;
+            padding: 28px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+        }
+
+        .virtual-card-front {
+            background: linear-gradient(135deg, rgba(6, 182, 212, 0.15) 0%, rgba(13, 14, 21, 0.95) 70%, rgba(255, 255, 255, 0.05) 100%);
+            border: 1px solid rgba(6, 182, 212, 0.25);
+            z-index: 2;
+        }
+
+        .virtual-card-back {
+            background: linear-gradient(135deg, rgba(13, 14, 21, 0.95) 0%, rgba(99, 102, 241, 0.15) 100%);
+            border: 1px solid rgba(99, 102, 241, 0.25);
+            transform: rotateY(180deg);
+            padding: 20px 0;
+            justify-content: flex-start;
+        }
+
+        .card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .card-chip {
+            width: 50px;
+            height: 38px;
+            background: linear-gradient(135deg, #ffe082 0%, #ffb300 100%);
+            border-radius: 8px;
+            position: relative;
+            box-shadow: inset 0 1px 2px rgba(255,255,255,0.3);
+        }
+
+        .card-logo {
+            font-size: 20px;
+            font-weight: 800;
+            font-style: italic;
+            color: rgba(255, 255, 255, 0.9);
+            letter-spacing: -1px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .card-logo i {
+            color: var(--accent-cyan);
+        }
+
+        .card-number {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 21px;
+            letter-spacing: 2px;
+            color: #ffffff;
+            margin: 25px 0 10px 0;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            text-align: center;
+        }
+
+        .card-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .card-holder-label, .card-expiry-label {
+            font-size: 9px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+
+        .card-holder-name, .card-expiry-val {
+            font-size: 14px;
+            font-weight: 500;
+            text-transform: uppercase;
+            color: #ffffff;
+        }
+
+        /* Back Card Strips */
+        .card-black-strip {
+            background: #000000;
+            height: 45px;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .card-signature-section {
+            padding: 20px 28px 0 28px;
+        }
+
+        .card-signature-label {
+            font-size: 9px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+        }
+
+        .card-signature-bar {
+            background: rgba(255, 255, 255, 0.9);
+            height: 40px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 15px;
+            color: #111;
+            font-family: 'Share Tech Mono', monospace;
+            font-weight: 700;
+            font-size: 16px;
+            letter-spacing: 1px;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        /* Payment Tabs */
+        .custom-payment-tabs {
+            margin-bottom: 30px;
+            gap: 10px;
+        }
+
+        .custom-payment-tabs .nav-link {
+            background: var(--bg-glass);
+            border: 1px solid var(--border-glass);
+            color: var(--text-muted);
+            border-radius: 14px;
+            padding: 12px 24px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .custom-payment-tabs .nav-link:hover, .custom-payment-tabs .nav-link.active {
+            background: linear-gradient(135deg, var(--accent-indigo), var(--accent-cyan));
+            color: #ffffff !important;
+            border-color: transparent;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Form styling */
+        .payment-title {
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 32px;
+            letter-spacing: -1.5px;
+            margin-bottom: 25px;
+            background: linear-gradient(to right, var(--text-main) 70%, var(--accent-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .form-label {
+            font-weight: 500;
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .input-group-text {
+            background-color: var(--bg-glass);
+            border: 1px solid var(--border-glass);
+            border-right: none;
+            color: var(--text-muted);
+            border-top-left-radius: 12px;
+            border-bottom-left-radius: 12px;
+        }
+
+        .form-control, .form-select {
+            background-color: var(--bg-glass);
+            border: 1px solid var(--border-glass);
+            color: var(--text-main);
+            border-top-right-radius: 12px;
+            border-bottom-right-radius: 12px;
+            padding: 12px 16px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .form-select {
+            border-top-left-radius: 12px;
+            border-bottom-left-radius: 12px;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23cbd5e1' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+        }
+
+        .form-control:focus, .form-select:focus {
+            background-color: var(--bg-glass);
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.15);
+            color: var(--text-main);
+        }
+
+        .form-control::placeholder {
+            color: var(--text-muted);
+            opacity: 0.5;
+        }
+
+        .form-select option {
+            background-color: var(--bg-secondary);
+            color: var(--text-main);
+        }
+
+        /* Gold CTA Button */
+        .btn-gold {
+            background: linear-gradient(135deg, #10b981, #059669); /* Rich green for pay success */
+            color: #ffffff !important;
+            font-weight: 600;
+            border: none;
+            border-radius: 14px;
+            padding: 14px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.2);
+            font-size: 16px;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-gold:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+            background: linear-gradient(135deg, #059669, #047857);
+        }
+
+        /* UPI Section styling */
+        .qr-wrapper {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--border-glass);
+            border-radius: 20px;
+            padding: 24px;
+            text-align: center;
+            max-width: 320px;
+            margin: 0 auto;
+        }
+
+        .qr-placeholder {
+            width: 180px;
+            height: 180px;
+            background: #ffffff;
+            margin: 0 auto 16px auto;
+            border-radius: 12px;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .qr-placeholder svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Simulator elements */
+        .loader-ring {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(6,182,212,0.3);
+            border-radius: 50%;
+            border-top-color: var(--accent-cyan);
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Floating Back Button -->
+<a href="user-dashboard.html" class="btn-back">
+    <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
+</a>
+
+<div class="payment-container">
+    <div class="row g-5 align-items-center">
+        <!-- Card / QR Code Graphic on Left -->
+        <div class="col-lg-5 d-none d-lg-block">
+            <div class="card-preview-wrapper" id="graphics-container">
+                <!-- Virtual Card (Credit tab) -->
+                <div class="virtual-card-inner" id="v-card-inner">
+                    <!-- Front -->
+                    <div class="virtual-card-front">
+                        <div class="card-top">
+                            <div class="card-chip"></div>
+                            <div class="card-logo" id="v-card-logo"><i class="fa-solid fa-credit-card"></i> <span id="v-brand-name">PayIndigo</span></div>
+                        </div>
+                        <div class="card-number" id="v-card-number">•••• •••• •••• ••••</div>
+                        <div class="card-bottom">
+                            <div>
+                                <div class="card-holder-label">Card Holder</div>
+                                <div class="card-holder-name" id="v-card-holder">Your Name</div>
+                            </div>
+                            <div>
+                                <div class="card-expiry-label">Expires</div>
+                                <div class="card-expiry-val" id="v-card-expiry">MM/YY</div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Back -->
+                    <div class="virtual-card-back">
+                        <div class="card-black-strip"></div>
+                        <div class="card-signature-section w-100">
+                            <div class="card-signature-label">Security Code (CVV)</div>
+                            <div class="card-signature-bar" id="v-card-cvv">•••</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- UPI QR Scanner visual (hidden initially) -->
+                <div class="qr-wrapper d-none w-100" id="v-upi-qr">
+                    <div class="qr-placeholder">
+                        <!-- Procedural SVG QR Code mockup -->
+                        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                            <rect width="100" height="100" fill="#fff"/>
+                            <!-- Corners -->
+                            <rect x="5" y="5" width="25" height="25" fill="#000"/>
+                            <rect x="8" y="8" width="19" height="19" fill="#fff"/>
+                            <rect x="12" y="12" width="11" height="11" fill="#000"/>
+                            
+                            <rect x="70" y="5" width="25" height="25" fill="#000"/>
+                            <rect x="73" y="8" width="19" height="19" fill="#fff"/>
+                            <rect x="77" y="12" width="11" height="11" fill="#000"/>
+                            
+                            <rect x="5" y="70" width="25" height="25" fill="#000"/>
+                            <rect x="8" y="73" width="19" height="19" fill="#fff"/>
+                            <rect x="12" y="77" width="11" height="11" fill="#000"/>
+                            
+                            <!-- Middle bits mock QR pattern -->
+                            <rect x="35" y="10" width="8" height="8" fill="#000"/>
+                            <rect x="48" y="5" width="12" height="6" fill="#000"/>
+                            <rect x="35" y="24" width="15" height="4" fill="#000"/>
+                            <rect x="55" y="20" width="8" height="15" fill="#000"/>
+                            
+                            <rect x="10" y="38" width="12" height="12" fill="#000"/>
+                            <rect x="25" y="45" width="15" height="8" fill="#000"/>
+                            <rect x="45" y="38" width="10" height="18" fill="#000"/>
+                            <rect x="60" y="48" width="20" height="6" fill="#000"/>
+                            <rect x="85" y="35" width="10" height="15" fill="#000"/>
+                            
+                            <rect x="38" y="65" width="12" height="10" fill="#000"/>
+                            <rect x="42" y="78" width="24" height="6" fill="#000"/>
+                            <rect x="70" y="65" width="8" height="25" fill="#000"/>
+                            <rect x="85" y="75" width="10" height="10" fill="#000"/>
+                            <rect x="35" y="88" width="20" height="5" fill="#000"/>
+                        </svg>
+                    </div>
+                    <p class="font-monospace mb-1 fw-bold">Scan to Pay via UPI</p>
+                    <p class="text-muted small mb-0">Use GPay, PhonePe, or Paytm</p>
+                </div>
+
+                <!-- Net Banking Graphic (hidden initially) -->
+                <div class="qr-wrapper d-none w-100" id="v-netbanking-graphic">
+                    <div class="d-flex justify-content-center align-items-center mb-4 text-warning" style="font-size: 55px; height: 160px;">
+                        <i class="fa-solid fa-building-columns"></i>
+                    </div>
+                    <p class="fw-bold mb-1" id="v-bank-name">Select Your Bank</p>
+                    <p class="text-muted small mb-0">Redirects to secure banking site</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Checkout Form Right Column -->
+        <div class="col-lg-7">
+            <h2 class="payment-title">Secure Checkout</h2>
+
+            <!-- Payment Method Navigation Tabs -->
+            <ul class="nav nav-pills custom-payment-tabs" id="paymentTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="card-tab" data-bs-toggle="pill" data-bs-target="#tab-card" type="button" role="tab" onclick="switchVisual('card')"><i class="fa-solid fa-credit-card me-2"></i>Card</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="upi-tab" data-bs-toggle="pill" data-bs-target="#tab-upi" type="button" role="tab" onclick="switchVisual('upi')"><i class="fa-solid fa-qrcode me-2"></i>UPI QR</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="netbanking-tab" data-bs-toggle="pill" data-bs-target="#tab-netbanking" type="button" role="tab" onclick="switchVisual('netbanking')"><i class="fa-solid fa-building-columns me-2"></i>Net Banking</button>
+                </li>
+            </ul>
+
+            <form action="../payment" method="post" id="paymentForm">
+                <!-- Shared inputs for database persistence -->
+                <div class="row">
+                    <!-- Booking ID -->
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Booking ID</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fa-solid fa-receipt"></i></span>
+                            <input type="number" id="bookingId" name="bookingId" class="form-control" placeholder="Booking Ref #" required>
+                        </div>
+                    </div>
+
+                    <!-- Amount -->
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Amount (INR)</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fa-solid fa-indian-rupee-sign"></i></span>
+                            <input type="number" id="amount" name="amount" class="form-control" placeholder="₹ Amount" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab Contents -->
+                <div class="tab-content" id="paymentTabContent">
+                    <!-- Card Details Tab Pane -->
+                    <div class="tab-pane fade show active" id="tab-card" role="tabpanel" aria-labelledby="card-tab">
+                        <!-- Cardholder Name -->
+                        <div class="mb-3">
+                            <label class="form-label">Cardholder Name</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fa-solid fa-signature"></i></span>
+                                <input type="text" id="cardHolder" class="form-control card-input" placeholder="John Doe">
+                            </div>
+                        </div>
+
+                        <!-- Card Number -->
+                        <div class="mb-3">
+                            <label class="form-label">Card Number</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fa-solid fa-credit-card"></i></span>
+                                <input type="text" id="cardNumber" class="form-control card-input" placeholder="4111 2222 3333 4444" maxlength="19">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <!-- Expiry Month -->
+                            <div class="col-md-7 mb-4">
+                                <label class="form-label">Expiration Date</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fa-solid fa-calendar"></i></span>
+                                    <input type="month" id="expiry" class="form-control card-input">
+                                </div>
+                            </div>
+
+                            <!-- CVV -->
+                            <div class="col-md-5 mb-4">
+                                <label class="form-label">Security Code (CVV)</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fa-solid fa-shield-halved"></i></span>
+                                    <input type="password" id="cvv" class="form-control card-input" placeholder="•••" maxlength="3" autocomplete="off">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- UPI tab pane -->
+                    <div class="tab-pane fade" id="tab-upi" role="tabpanel" aria-labelledby="upi-tab">
+                        <div class="mb-4">
+                            <label class="form-label">Enter UPI ID (VPA)</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fa-solid fa-at"></i></span>
+                                <input type="text" id="upiVpa" class="form-control" placeholder="username@upi">
+                            </div>
+                        </div>
+                        <div class="d-lg-none text-center mb-4">
+                            <!-- Show QR Code on mobile inside tab content instead since sidebar goes invisible -->
+                            <div class="qr-wrapper">
+                                <div class="qr-placeholder">
+                                    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                        <rect width="100" height="100" fill="#fff"/>
+                                        <rect x="5" y="5" width="25" height="25" fill="#000"/>
+                                        <rect x="8" y="8" width="19" height="19" fill="#fff"/>
+                                        <rect x="12" y="12" width="11" height="11" fill="#000"/>
+                                        <rect x="70" y="5" width="25" height="25" fill="#000"/>
+                                        <rect x="73" y="8" width="19" height="19" fill="#fff"/>
+                                        <rect x="77" y="12" width="11" height="11" fill="#000"/>
+                                        <rect x="5" y="70" width="25" height="25" fill="#000"/>
+                                        <rect x="8" y="73" width="19" height="19" fill="#fff"/>
+                                        <rect x="12" y="77" width="11" height="11" fill="#000"/>
+                                        <rect x="35" y="10" width="8" height="8" fill="#000"/>
+                                        <rect x="48" y="5" width="12" height="6" fill="#000"/>
+                                        <rect x="35" y="24" width="15" height="4" fill="#000"/>
+                                        <rect x="55" y="20" width="8" height="15" fill="#000"/>
+                                        <rect x="10" y="38" width="12" height="12" fill="#000"/>
+                                        <rect x="25" y="45" width="15" height="8" fill="#000"/>
+                                        <rect x="45" y="38" width="10" height="18" fill="#000"/>
+                                        <rect x="60" y="48" width="20" height="6" fill="#000"/>
+                                        <rect x="85" y="35" width="10" height="15" fill="#000"/>
+                                        <rect x="38" y="65" width="12" height="10" fill="#000"/>
+                                        <rect x="42" y="78" width="24" height="6" fill="#000"/>
+                                        <rect x="70" y="65" width="8" height="25" fill="#000"/>
+                                        <rect x="85" y="75" width="10" height="10" fill="#000"/>
+                                        <rect x="35" y="88" width="20" height="5" fill="#000"/>
+                                    </svg>
+                                </div>
+                                <p class="text-white font-monospace mb-1 fw-bold">Scan to Pay via UPI</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Net Banking tab pane -->
+                    <div class="tab-pane fade" id="tab-netbanking" role="tabpanel" aria-labelledby="netbanking-tab">
+                        <div class="mb-4">
+                            <label class="form-label">Select Your Bank</label>
+                            <select id="bankSelect" class="form-select" onchange="updateBankGraphic(this.value)">
+                                <option value="" disabled selected>Choose a major bank</option>
+                                <option value="State Bank of India">State Bank of India (SBI)</option>
+                                <option value="HDFC Bank">HDFC Bank</option>
+                                <option value="ICICI Bank">ICICI Bank</option>
+                                <option value="Axis Bank">Axis Bank</option>
+                                <option value="Kotak Mahindra Bank">Kotak Mahindra Bank</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Simulation Overlay Status Area (Loader) -->
+                <div id="simStatus" class="mb-3 text-center d-none">
+                    <span class="loader-ring"></span>
+                    <span class="text-warning fw-bold font-monospace" id="statusMessage">Verifying checkout request...</span>
+                </div>
+
+                <!-- Pay Button -->
+                <button type="submit" class="btn btn-gold w-100 mt-2" id="submitBtn">Pay Securely</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Autofill values from URL query parameters (if coming from book-car page)
+    const urlParams = new URLSearchParams(window.location.search);
+    const amountVal = urlParams.get('amount');
+    const bookingIdVal = urlParams.get('bookingId');
+    if (amountVal) document.getElementById('amount').value = Math.round(amountVal);
+    if (bookingIdVal) document.getElementById('bookingId').value = bookingIdVal;
+
+    // Tab view graphic swapper
+    function switchVisual(method) {
+        const vCard = document.getElementById('v-card-inner');
+        const vUpi = document.getElementById('v-upi-qr');
+        const vNB = document.getElementById('v-netbanking-graphic');
+        const submitBtn = document.getElementById('submitBtn');
+        const cardInputs = document.querySelectorAll('.card-input');
+
+        if (method === 'card') {
+            vCard.classList.remove('d-none');
+            vUpi.classList.add('d-none');
+            vNB.classList.add('d-none');
+            submitBtn.textContent = "Pay Securely with Card";
+            
+            // Require card details
+            cardInputs.forEach(i => i.setAttribute('required', 'true'));
+            document.getElementById('upiVpa').removeAttribute('required');
+            document.getElementById('bankSelect').removeAttribute('required');
+        } else if (method === 'upi') {
+            vCard.classList.add('d-none');
+            vUpi.classList.remove('d-none');
+            vNB.classList.add('d-none');
+            submitBtn.textContent = "Verify & Pay via UPI";
+
+            // Remove card validation rules
+            cardInputs.forEach(i => i.removeAttribute('required'));
+            document.getElementById('upiVpa').setAttribute('required', 'true');
+            document.getElementById('bankSelect').removeAttribute('required');
+        } else {
+            vCard.classList.add('d-none');
+            vUpi.classList.add('d-none');
+            vNB.classList.remove('d-none');
+            submitBtn.textContent = "Pay via Net Banking";
+
+            // Remove card validation rules
+            cardInputs.forEach(i => i.removeAttribute('required'));
+            document.getElementById('upiVpa').removeAttribute('required');
+            document.getElementById('bankSelect').setAttribute('required', 'true');
+        }
+    }
+
+    // Set initial validation
+    switchVisual('card');
+
+    // Net banking bank graphic update
+    function updateBankGraphic(bank) {
+        document.getElementById('v-bank-name').textContent = bank;
+    }
+
+    // Live Card Mirror and formatting scripts
+    const cardNumberInput = document.getElementById('cardNumber');
+    const cardHolderInput = document.getElementById('cardHolder');
+    const expiryInput = document.getElementById('expiry');
+    const cvvInput = document.getElementById('cvv');
+
+    const vCardInner = document.getElementById('v-card-inner');
+    const vCardNumber = document.getElementById('v-card-number');
+    const vCardHolder = document.getElementById('v-card-holder');
+    const vCardExpiry = document.getElementById('v-card-expiry');
+    const vCardCvv = document.getElementById('v-card-cvv');
+    const vCardLogo = document.getElementById('v-card-logo');
+    const vBrandName = document.getElementById('v-brand-name');
+
+    // Auto Card-type detection logic (Visa, MC, Amex, RuPay)
+    cardNumberInput.addEventListener('input', function(e) {
+        let val = e.target.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+        let formatted = '';
+        
+        for (let i = 0; i < val.length; i++) {
+            if (i > 0 && i % 4 === 0) formatted += ' ';
+            formatted += val[i];
+        }
+        
+        cardNumberInput.value = formatted;
+        vCardNumber.textContent = formatted || '•••• •••• •••• ••••';
+
+        // Detect brand prefix
+        if (val.startsWith('4')) {
+            vCardLogo.innerHTML = '<i class="fa-brands fa-cc-visa"></i>';
+            vBrandName.textContent = "Visa";
+        } else if (val.startsWith('5')) {
+            vCardLogo.innerHTML = '<i class="fa-brands fa-cc-mastercard"></i>';
+            vBrandName.textContent = "Mastercard";
+        } else if (val.startsWith('37') || val.startsWith('34')) {
+            vCardLogo.innerHTML = '<i class="fa-brands fa-cc-amex"></i>';
+            vBrandName.textContent = "Amex";
+        } else if (val.startsWith('60') || val.startsWith('65') || val.startsWith('81')) {
+            vCardLogo.innerHTML = '<i class="fa-solid fa-credit-card"></i>';
+            vBrandName.textContent = "RuPay";
+        } else {
+            vCardLogo.innerHTML = '<i class="fa-solid fa-credit-card"></i>';
+            vBrandName.textContent = "PayIndigo";
+        }
+    });
+
+    cardHolderInput.addEventListener('input', function(e) {
+        vCardHolder.textContent = e.target.value || 'Your Name';
+    });
+
+    expiryInput.addEventListener('change', function(e) {
+        const val = e.target.value; // YYYY-MM
+        if (val) {
+            const parts = val.split('-');
+            vCardExpiry.textContent = `${parts[1]}/${parts[0].slice(2)}`;
+        } else {
+            vCardExpiry.textContent = 'MM/YY';
+        }
+    });
+
+    cvvInput.addEventListener('input', function(e) {
+        vCardCvv.textContent = e.target.value || '•••';
+    });
+
+    // 3D Card flips based on CVV Focus states
+    cvvInput.addEventListener('focus', () => {
+        vCardInner.classList.add('flipped');
+    });
+
+    cvvInput.addEventListener('blur', () => {
+        vCardInner.classList.remove('flipped');
+    });
+
+    // Submit Simulation
+    document.getElementById('paymentForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const form = e.target;
+        
+        // Hide button, display loader overlay
+        document.getElementById('submitBtn').classList.add('d-none');
+        const statusArea = document.getElementById('simStatus');
+        const statusMsg = document.getElementById('statusMessage');
+        statusArea.classList.remove('d-none');
+
+        // Check active payment method to set descriptive loader text
+        const activeTab = document.querySelector('.custom-payment-tabs button.active').id;
+        
+        if (activeTab === 'card-tab') {
+            statusMsg.textContent = "Connecting to Secure Card Gateway...";
+            setTimeout(() => {
+                statusMsg.textContent = "Authorizing Transaction with Bank...";
+                setTimeout(() => {
+                    statusMsg.textContent = "Finalizing Payment Record...";
+                    setTimeout(() => {
+                        form.submit();
+                    }, 800);
+                }, 1000);
+            }, 1000);
+        } else if (activeTab === 'upi-tab') {
+            statusMsg.textContent = "Sending request to VPA...";
+            setTimeout(() => {
+                statusMsg.textContent = "Awaiting response from scanner device...";
+                setTimeout(() => {
+                    statusMsg.textContent = "Payment Confirmed! Updating bookings...";
+                    setTimeout(() => {
+                        form.submit();
+                    }, 800);
+                }, 1500);
+            }, 1000);
+        } else {
+            statusMsg.textContent = "Redirecting to Net Banking Server...";
+            setTimeout(() => {
+                statusMsg.textContent = "Validating secure session details...";
+                setTimeout(() => {
+                    statusMsg.textContent = "Processing Bank transfer...";
+                    setTimeout(() => {
+                        form.submit();
+                    }, 1000);
+                }, 1000);
+            }, 1000);
+        }
+    });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

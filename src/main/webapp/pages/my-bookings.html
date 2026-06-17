@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>
+        (function() {
+            const theme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', theme);
+        })();
+    </script>
+    <meta charset="UTF-8">
+    <title>My Bookings - EliteCars</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- CDNs -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-primary: #06070a; /* Midnight Obsidian */
+            --bg-secondary: #0d0e15; /* Carbon Deep Slate */
+            --bg-glass: rgba(255, 255, 255, 0.03);
+            --border-glass: rgba(255, 255, 255, 0.06);
+            --accent-indigo: #6366f1; /* Electric Indigo */
+            --accent-cyan: #06b6d4; /* Cyber Cyan */
+            --accent-indigo-hover: #4f46e5;
+            --accent-cyan-hover: #0891b2;
+            --text-main: #f8fafc; /* Slate-50 */
+            --text-muted: #94a3b8; /* Slate-400 */
+            --font-display: 'Plus Jakarta Sans', sans-serif;
+            --font-sans: 'Inter', sans-serif;
+            --navbar-bg: rgba(6, 7, 10, 0.85);
+        }
+
+        [data-theme="light"] {
+            --bg-primary: #f8fafc; /* Slate-50 */
+            --bg-secondary: #ffffff; /* White */
+            --bg-glass: rgba(0, 0, 0, 0.02);
+            --border-glass: rgba(0, 0, 0, 0.08);
+            --accent-indigo: #4f46e5; /* Indigo-600 */
+            --accent-cyan: #0891b2; /* Cyber Cyan-600 */
+            --accent-indigo-hover: #4338ca;
+            --accent-cyan-hover: #0e7490;
+            --text-main: #0f172a; /* Slate-900 */
+            --text-muted: #475569; /* Slate-600 */
+            --navbar-bg: rgba(248, 250, 252, 0.85);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--bg-primary);
+            color: var(--text-main);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: var(--font-display);
+            font-weight: 700;
+        }
+
+        .text-muted {
+            color: var(--text-muted) !important;
+        }
+
+        /* Glassmorphic Navbar */
+        .navbar {
+            background: rgba(6, 7, 10, 0.85) !important;
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid var(--border-glass);
+            padding: 15px 0;
+            z-index: 1000;
+        }
+        
+        .navbar-brand {
+            font-size: 26px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #fff 40%, var(--accent-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .btn-back {
+            color: var(--text-main);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: var(--bg-glass);
+            border: 1px solid var(--border-glass);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-back:hover {
+            border-color: var(--accent-cyan);
+            color: var(--accent-cyan);
+            transform: translateX(-3px);
+        }
+
+        /* Theme Toggle */
+        .theme-toggle-btn {
+            background: none;
+            border: none;
+            color: var(--text-main);
+            font-size: 18px;
+            cursor: pointer;
+            transition: color 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+        }
+
+        .theme-toggle-btn:hover {
+            color: var(--accent-cyan);
+        }
+
+        /* Hero */
+        .page-hero {
+            padding: 60px 0;
+            background: radial-gradient(circle at top right, rgba(99, 102, 241, 0.08), transparent 45%),
+                        var(--bg-secondary);
+            border-bottom: 1px solid var(--border-glass);
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .page-hero h1 {
+            font-size: 38px;
+            letter-spacing: -1px;
+            background: linear-gradient(135deg, #ffffff, var(--accent-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+
+        /* Booking Cards */
+        .booking-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-glass);
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 24px;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+        }
+
+        .booking-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(6, 182, 212, 0.2);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        .car-thumb {
+            width: 100%;
+            height: 140px;
+            border-radius: 12px;
+            object-fit: cover;
+            background: #121418;
+            border: 1px solid var(--border-glass);
+        }
+
+        /* Status Badges */
+        .status-badge {
+            font-size: 12px;
+            font-weight: 700;
+            padding: 6px 14px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-block;
+        }
+
+        .status-pending {
+            background: rgba(245, 158, 11, 0.15);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            color: #fbbf24;
+        }
+
+        .status-confirmed, .status-approved {
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #34d399;
+        }
+
+        .status-cancelled {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #f87171;
+        }
+
+        /* Details */
+        .booking-info-item {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .booking-info-item i {
+            color: var(--accent-cyan);
+            width: 18px;
+            text-align: center;
+        }
+
+        .booking-price {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        .booking-price span {
+            font-size: 14px;
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        /* Buttons */
+        .btn-edit-booking {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border-glass);
+            color: var(--text-main);
+            font-weight: 600;
+            border-radius: 12px;
+            padding: 10px 20px;
+            transition: all 0.2s ease;
+            font-size: 14px;
+        }
+
+        .btn-edit-booking:hover {
+            border-color: var(--accent-cyan);
+            color: var(--accent-cyan);
+            background: rgba(6, 182, 212, 0.05);
+        }
+
+        .btn-cancel-booking {
+            background: rgba(239, 68, 68, 0.08);
+            border: 1px solid rgba(239, 68, 68, 0.15);
+            color: #f87171;
+            font-weight: 600;
+            border-radius: 12px;
+            padding: 10px 20px;
+            transition: all 0.2s ease;
+            font-size: 14px;
+        }
+
+        .btn-cancel-booking:hover {
+            background: rgba(239, 68, 68, 0.15);
+            border-color: #ef4444;
+            color: #ffffff;
+        }
+
+        /* Custom Modal Styling */
+        .modal-content {
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, #11131c 100%);
+            border: 1px solid var(--border-glass);
+            border-radius: 24px;
+            color: var(--text-main);
+        }
+
+        .modal-header {
+            border-bottom: 1px solid var(--border-glass);
+            padding: 24px;
+        }
+
+        .modal-footer {
+            border-top: 1px solid var(--border-glass);
+            padding: 24px;
+        }
+
+        .btn-close-custom {
+            font-size: 20px;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+
+        .btn-close-custom:hover {
+            color: var(--accent-cyan);
+        }
+
+        .modal-spec-box {
+            background: var(--bg-glass);
+            border: 1px solid var(--border-glass);
+            border-radius: 14px;
+            padding: 14px 18px;
+            margin-bottom: 15px;
+        }
+
+        .modal-spec-box span {
+            display: block;
+            font-size: 12px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .modal-spec-box strong {
+            font-size: 16px;
+            color: var(--accent-cyan);
+        }
+
+        .input-dark {
+            background: var(--bg-glass);
+            border: 1px solid var(--border-glass);
+            color: var(--text-main);
+            border-radius: 12px;
+            padding: 12px;
+        }
+
+        .input-dark:focus {
+            background: var(--bg-secondary);
+            border-color: var(--accent-cyan);
+            color: var(--text-main);
+            box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.15);
+        }
+
+        .price-summary {
+            background: rgba(99, 102, 241, 0.05);
+            border: 1px solid rgba(99, 102, 241, 0.15);
+            border-radius: 16px;
+            padding: 18px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
+        <a class="navbar-brand" href="user-dashboard.html">
+            <i class="fa-solid fa-car-side me-2 text-info"></i>EliteCars
+        </a>
+        <div class="d-flex align-items-center gap-3">
+            <button class="theme-toggle-btn" id="themeToggle">
+                <i class="fa-solid fa-moon"></i>
+            </button>
+            <a href="user-dashboard.html" class="btn-back">
+                <i class="fa-solid fa-arrow-left"></i> Dashboard
+            </a>
+        </div>
+    </div>
+</nav>
+
+<!-- Hero -->
+<section class="page-hero">
+    <div class="container">
+        <h1>My Rentals</h1>
+        <p>Monitor, update, or cancel your luxury car rental reservations.</p>
+    </div>
+</section>
+
+<!-- Main Grid -->
+<div class="container py-3">
+    <div id="bookingsList" class="row">
+        <!-- Spinner -->
+        <div class="col-12 text-center py-5">
+            <div class="spinner-border text-info" role="status">
+                <span class="visually-hidden">Loading Bookings...</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Dates Modal -->
+<div class="modal fade" id="editDatesModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header d-flex justify-content-between align-items-center">
+                <h5 class="modal-title"><i class="fa-regular fa-calendar-days me-2 text-info"></i>Update Rental Dates</h5>
+                <div class="btn-close-custom" data-bs-dismiss="modal"><i class="fa-solid fa-xmark"></i></div>
+            </div>
+            <div class="modal-body">
+                <div class="row g-3">
+                    <div class="col-12 col-sm-6">
+                        <div class="modal-spec-box">
+                            <span>Vehicle</span>
+                            <strong id="modalCarName">Mercedes C-Class</strong>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-6">
+                        <div class="modal-spec-box">
+                            <span>Rate / Day</span>
+                            <strong id="modalCarRate">₹0</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <form id="editDatesForm" class="mt-3">
+                    <input type="hidden" id="editBookingId">
+                    <input type="hidden" id="editCarId">
+                    <input type="hidden" id="editCarRateVal">
+
+                    <div class="mb-3">
+                        <label class="form-label text-muted">Pickup Date</label>
+                        <input type="date" id="editPickupDate" class="form-control input-dark" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label text-muted">Return Date</label>
+                        <input type="date" id="editReturnDate" class="form-control input-dark" required>
+                    </div>
+
+                    <div class="price-summary">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="text-muted" style="font-size: 13px; text-transform: uppercase;">Duration</span>
+                                <h6 id="summaryDays" class="mb-0">0 Days</h6>
+                            </div>
+                            <div class="text-end">
+                                <span class="text-muted" style="font-size: 13px; text-transform: uppercase;">Recalculated Total</span>
+                                <h4 class="mb-0 text-info">₹<span id="summaryTotal">0</span></h4>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer d-flex justify-content-between">
+                <button type="button" class="btn btn-secondary px-4 py-2" data-bs-dismiss="modal" style="border-radius: 12px;">Close</button>
+                <button type="button" class="btn btn-book px-4 py-2" onclick="submitDateUpdate()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    let bookingsData = [];
+    let carsData = [];
+    let bootstrapModal;
+
+    // Load User Data & Sync Catalog
+    function loadPageData() {
+        Promise.all([
+            fetch("../viewCars").then(res => res.json()).catch(() => []),
+            fetch("../bookingHistory").then(res => res.json()).catch(() => [])
+        ])
+        .then(([cars, bookings]) => {
+            carsData = cars || [];
+            bookingsData = bookings || [];
+            renderBookings();
+        })
+        .catch(err => {
+            console.error(err);
+            document.getElementById("bookingsList").innerHTML = `
+                <div class="col-12 text-center py-5">
+                    <p class="text-danger fs-5"><i class="fa-solid fa-triangle-exclamation me-2"></i> Failed to retrieve booking histories.</p>
+                </div>`;
+        });
+    }
+
+    // Render bookings grid
+    function renderBookings() {
+        const container = document.getElementById("bookingsList");
+        if (bookingsData.length === 0) {
+            container.innerHTML = `
+                <div class="col-12 text-center py-5">
+                    <p class="text-muted fs-5"><i class="fa-regular fa-calendar-xmark me-2"></i> You have not booked any vehicles yet.</p>
+                    <a href="user-dashboard.html" class="btn btn-book mt-3 px-4 py-2">Browse Luxury Fleet</a>
+                </div>`;
+            return;
+        }
+
+        let html = "";
+        // Sort bookings by ID descending (latest first)
+        bookingsData.sort((a, b) => b.bookingId - a.bookingId);
+
+        bookingsData.forEach(booking => {
+            // Find matched car
+            const car = carsData.find(c => c.carId === booking.carId);
+            const carName = car ? `${car.brand} ${car.carName}` : "Elite Vehicle";
+            const imageUrl = car ? (car.image.startsWith("http") ? car.image : `../images/${car.image}`) : "https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?q=80&w=600";
+            const carRate = car ? car.pricePerDay : 0;
+
+            let statusClass = "status-pending";
+            if (booking.status.equalsIgnoreCase?.("Cancelled") || booking.status === "Cancelled") {
+                statusClass = "status-cancelled";
+            } else if (booking.status.equalsIgnoreCase?.("Approved") || booking.status === "Approved" || booking.status === "Confirmed") {
+                statusClass = "status-confirmed";
+            }
+
+            const canUpdate = booking.status !== "Cancelled";
+
+            html += `
+            <div class="col-12">
+                <div class="booking-card">
+                    <div class="row align-items-center g-4">
+                        <!-- Thumbnail -->
+                        <div class="col-md-3 text-center">
+                            <img src="${imageUrl}" class="car-thumb" alt="${carName}" onerror="this.src='https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?q=80&w=600'">
+                        </div>
+                        
+                        <!-- Details -->
+                        <div class="col-md-5">
+                            <div class="d-flex align-items-center gap-3 mb-3">
+                                <h3 class="mb-0 fs-4">${carName}</h3>
+                                <span class="status-badge ${statusClass}">${booking.status}</span>
+                            </div>
+                            
+                            <div class="booking-info-item">
+                                <i class="fa-regular fa-id-card"></i>
+                                <span>Booking Reference: <strong>#ELITE-BK-${booking.bookingId}</strong></span>
+                            </div>
+                            <div class="booking-info-item">
+                                <i class="fa-regular fa-calendar"></i>
+                                <span>Pickup Date: <strong>${booking.pickupDate}</strong></span>
+                            </div>
+                            <div class="booking-info-item">
+                                <i class="fa-regular fa-calendar-check"></i>
+                                <span>Return Date: <strong>${booking.returnDate}</strong></span>
+                            </div>
+                        </div>
+
+                        <!-- Price summary -->
+                        <div class="col-md-2 text-md-center">
+                            <span class="price-label">Paid Total</span>
+                            <div class="booking-price">₹${booking.totalAmount.toLocaleString()}</div>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="col-md-2 d-flex flex-column gap-2">
+                            ${canUpdate ? `
+                                <button class="btn btn-edit-booking w-100" onclick="openEditModal(${booking.bookingId}, ${booking.carId}, '${carName}', ${carRate}, '${booking.pickupDate}', '${booking.returnDate}')">
+                                    <i class="fa-regular fa-pen-to-square me-1"></i> Edit Dates
+                                </button>
+                                <button class="btn btn-cancel-booking w-100" onclick="cancelBooking(${booking.bookingId})">
+                                    <i class="fa-solid fa-trash-can me-1"></i> Cancel
+                                </button>
+                            ` : `
+                                <button class="btn btn-outline-secondary w-100" disabled style="opacity: 0.3; border-radius: 12px; font-size: 14px;">Archived</button>
+                            `}
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+        });
+        container.innerHTML = html;
+    }
+
+    // Modal Operations
+    function openEditModal(bookingId, carId, carName, carRate, pickupDate, returnDate) {
+        document.getElementById("editBookingId").value = bookingId;
+        document.getElementById("editCarId").value = carId;
+        document.getElementById("editCarRateVal").value = carRate;
+        document.getElementById("modalCarName").textContent = carName;
+        document.getElementById("modalCarRate").textContent = `₹${carRate.toLocaleString()}`;
+
+        // Set date inputs
+        const pickupInput = document.getElementById("editPickupDate");
+        const returnInput = document.getElementById("editReturnDate");
+        
+        pickupInput.value = pickupDate;
+        returnInput.value = returnDate;
+
+        // Set minimum dates to today so user can't select past dates
+        const today = new Date().toISOString().split('T')[0];
+        pickupInput.min = today;
+        returnInput.min = today;
+
+        recalculatePrice();
+        bootstrapModal.show();
+    }
+
+    // Recalculate price dynamically
+    function recalculatePrice() {
+        const pickupVal = document.getElementById("editPickupDate").value;
+        const returnVal = document.getElementById("editReturnDate").value;
+        const rate = parseFloat(document.getElementById("editCarRateVal").value || 0);
+
+        if (!pickupVal || !returnVal) return;
+
+        const d1 = new Date(pickupVal);
+        const d2 = new Date(returnVal);
+
+        const diffTime = d2.getTime() - d1.getTime();
+        let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+        if (diffDays < 0) {
+            document.getElementById("summaryDays").textContent = "Invalid Dates";
+            document.getElementById("summaryTotal").textContent = "0";
+            return;
+        }
+        if (diffDays === 0) diffDays = 1; // minimum 1 day
+
+        const total = diffDays * rate;
+        document.getElementById("summaryDays").textContent = `${diffDays} Day${diffDays > 1 ? 's' : ''}`;
+        document.getElementById("summaryTotal").textContent = total.toLocaleString();
+    }
+
+    document.getElementById("editPickupDate").addEventListener("change", recalculatePrice);
+    document.getElementById("editReturnDate").addEventListener("change", recalculatePrice);
+
+    // Submit dates update via AJAX
+    function submitDateUpdate() {
+        const bookingId = document.getElementById("editBookingId").value;
+        const pickupDate = document.getElementById("editPickupDate").value;
+        const returnDate = document.getElementById("editReturnDate").value;
+
+        if (!pickupDate || !returnDate) {
+            alert("Please fill in both pickup and return dates.");
+            return;
+        }
+
+        const d1 = new Date(pickupDate);
+        const d2 = new Date(returnDate);
+        if (d2 < d1) {
+            alert("Return date cannot be before pickup date.");
+            return;
+        }
+
+        const formData = new URLSearchParams();
+        formData.append("action", "updateDates");
+        formData.append("bookingId", bookingId);
+        formData.append("pickupDate", pickupDate);
+        formData.append("returnDate", returnDate);
+
+        fetch("../updateBooking", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: formData.toString()
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === "success") {
+                alert(data.message);
+                bootstrapModal.hide();
+                loadPageData(); // reload booking records
+            } else {
+                alert("Error: " + data.message);
+            }
+        })
+        .catch(() => {
+            alert("Failed to submit request to server.");
+        });
+    }
+
+    // Cancel Booking via AJAX
+    function cancelBooking(bookingId) {
+        if (!confirm("Are you sure you want to cancel this booking? This will release the vehicle availability.")) {
+            return;
+        }
+
+        const formData = new URLSearchParams();
+        formData.append("action", "cancel");
+        formData.append("bookingId", bookingId);
+
+        fetch("../updateBooking", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: formData.toString()
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === "success") {
+                alert(data.message);
+                loadPageData(); // reload booking records
+            } else {
+                alert("Error: " + data.message);
+            }
+        })
+        .catch(() => {
+            alert("Failed to cancel booking.");
+        });
+    }
+
+    // Init Page components
+    window.addEventListener("DOMContentLoaded", () => {
+        bootstrapModal = new bootstrap.Modal(document.getElementById('editDatesModal'));
+        loadPageData();
+
+        // Theme Toggle
+        const themeToggleBtn = document.getElementById('themeToggle');
+        const currentTheme = localStorage.getItem('theme') || 'dark';
+
+        if (currentTheme === 'light') {
+            document.documentElement.setAttribute('data-theme', 'light');
+            themeToggleBtn.innerHTML = '<i class="fa-solid fa-sun"></i>';
+        } else {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            themeToggleBtn.innerHTML = '<i class="fa-solid fa-moon"></i>';
+        }
+
+        themeToggleBtn.addEventListener('click', () => {
+            let theme = document.documentElement.getAttribute('data-theme');
+            if (theme === 'light') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+                themeToggleBtn.innerHTML = '<i class="fa-solid fa-moon"></i>';
+            } else {
+                document.documentElement.setAttribute('data-theme', 'light');
+                localStorage.setItem('theme', 'light');
+                themeToggleBtn.innerHTML = '<i class="fa-solid fa-sun"></i>';
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

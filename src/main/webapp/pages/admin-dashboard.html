@@ -286,6 +286,13 @@
             color: var(--text-main) !important;
             margin-bottom: 0;
             vertical-align: middle;
+            background-color: transparent !important;
+        }
+
+        .table thead, .table tbody, .table tr, .table th, .table td {
+            background-color: transparent !important;
+            border-color: var(--border-glass) !important;
+            color: var(--text-main) !important;
         }
 
         .table th {
@@ -294,14 +301,12 @@
             text-transform: uppercase;
             font-size: 12px;
             letter-spacing: 0.5px;
-            color: var(--text-muted);
-            border-bottom: 1px solid var(--border-glass);
+            color: var(--text-muted) !important;
             padding: 15px 20px;
         }
 
         .table td {
             padding: 20px;
-            border-bottom: 1px solid var(--border-glass);
             background: transparent !important;
         }
 
@@ -510,11 +515,12 @@
                         <th>Category</th>
                         <th>Rate (INR)</th>
                         <th>Status</th>
+                        <th style="width: 180px;">Actions</th>
                     </tr>
                 </thead>
                 <tbody id="adminCarsTableBody">
                     <tr>
-                        <td colspan="5" class="text-center py-5 text-muted">
+                        <td colspan="6" class="text-center py-5 text-muted">
                             <div class="spinner-border spinner-border-sm text-cyan mb-2" role="status"></div>
                             <div>Loading vehicle inventory...</div>
                         </td>
@@ -663,11 +669,13 @@
         fetch("../viewCars")
         .then(res => res.json())
         .then(cars => {
+
+
             const tbody = document.getElementById("adminCarsTableBody");
             if (!cars || cars.length === 0) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="5" class="text-center py-5 text-muted">
+                        <td colspan="6" class="text-center py-5 text-muted">
                             <i class="fa-regular fa-face-frown fs-4 mb-2 d-block text-cyan"></i>
                             <div>No registered vehicles yet.</div>
                         </td>
@@ -680,6 +688,7 @@
                 const imgUrl = car.image.startsWith("http") ? car.image : `../images/${car.image}`;
                 const isAvailable = car.availability.toLowerCase() === "available";
                 const badgeClass = isAvailable ? "badge-available" : "badge-unavailable";
+                const carJson = JSON.stringify(car).replace(/'/g, "&#39;");
                 
                 html += `
                     <tr>
@@ -695,6 +704,14 @@
                         <td>
                             <span class="badge-status ${badgeClass}">${car.availability}</span>
                         </td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-info me-2" onclick='openEditCarModal(${carJson})'>
+                                <i class="fa-solid fa-pen"></i> Edit
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger" onclick="deleteCar(${car.carId})">
+                                <i class="fa-solid fa-trash"></i> Remove
+                            </button>
+                        </td>
                     </tr>`;
             });
             tbody.innerHTML = html;
@@ -703,7 +720,7 @@
             console.log("Failed to fetch fleet inventory", err);
             document.getElementById("adminCarsTableBody").innerHTML = `
                 <tr>
-                    <td colspan="5" class="text-center py-5 text-danger">
+                    <td colspan="6" class="text-center py-5 text-danger">
                         <i class="fa-solid fa-triangle-exclamation fs-4 mb-2 d-block"></i>
                         <div>Failed to load inventory. Please refresh the page.</div>
                     </td>
@@ -784,6 +801,156 @@
                 </tr>`;
         });
     });
+
+    // Edit and Remove Car Operations
+    let editCarModalInstance;
+    function openEditCarModal(car) {
+        document.getElementById("editCarId").value = car.carId;
+        document.getElementById("editCarName").value = car.carName;
+        document.getElementById("editCarBrand").value = car.brand;
+        document.getElementById("editCarModel").value = car.model;
+        document.getElementById("editCarCategory").value = car.category;
+        document.getElementById("editCarFuelType").value = car.fuelType;
+        document.getElementById("editCarTransmission").value = car.transmission;
+        document.getElementById("editCarPrice").value = car.pricePerDay;
+        document.getElementById("editCarAvailability").value = car.availability;
+        
+        if (!editCarModalInstance) {
+            editCarModalInstance = new bootstrap.Modal(document.getElementById('editCarModal'));
+        }
+        editCarModalInstance.show();
+    }
+
+    function submitCarUpdate() {
+        const form = document.getElementById("editCarForm");
+        const formData = new URLSearchParams(new FormData(form));
+        
+        fetch("../updateCar", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: formData.toString()
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === "success") {
+                alert(data.message);
+                if (editCarModalInstance) editCarModalInstance.hide();
+                location.reload();
+            } else {
+                alert("Error: " + data.message);
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            alert("Failed to update car details.");
+        });
+    }
+
+    function deleteCar(carId) {
+        if (!confirm("Are you sure you want to remove this vehicle from the listing? This action cannot be undone.")) {
+            return;
+        }
+        
+        const params = new URLSearchParams();
+        params.append("action", "delete");
+        params.append("carId", carId);
+        
+        fetch("../updateCar", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: params.toString()
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === "success") {
+                alert(data.message);
+                location.reload();
+            } else {
+                alert("Error: " + data.message);
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            alert("Failed to remove vehicle.");
+        });
+    }
 </script>
+
+<!-- Edit Car Modal -->
+<div class="modal fade" id="editCarModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="background: var(--bg-secondary); border: 1px solid var(--border-glass); border-radius: 20px;">
+            <div class="modal-header" style="border-bottom: 1px solid var(--border-glass);">
+                <h5 class="modal-title" id="editCarModalLabel" style="font-weight: 700; color: var(--text-main);">Edit Vehicle Details</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" style="padding: 24px;">
+                <form id="editCarForm">
+                    <input type="hidden" id="editCarId" name="carId">
+                    <input type="hidden" name="action" value="update">
+                    
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label" style="font-size: 12px; text-transform: uppercase; color: var(--text-muted);">Car Name</label>
+                            <input type="text" id="editCarName" name="carName" class="form-control" style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-glass); color: var(--text-main); border-radius: 10px;" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" style="font-size: 12px; text-transform: uppercase; color: var(--text-muted);">Brand</label>
+                            <input type="text" id="editCarBrand" name="brand" class="form-control" style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-glass); color: var(--text-main); border-radius: 10px;" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" style="font-size: 12px; text-transform: uppercase; color: var(--text-muted);">Model Year</label>
+                            <input type="text" id="editCarModel" name="model" class="form-control" style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-glass); color: var(--text-main); border-radius: 10px;" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" style="font-size: 12px; text-transform: uppercase; color: var(--text-muted);">Category</label>
+                            <select id="editCarCategory" name="category" class="form-select" style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-glass); color: var(--text-main); border-radius: 10px;" required>
+                                <option value="Premium">Premium</option>
+                                <option value="SUV">SUV</option>
+                                <option value="Electric">Electric</option>
+                                <option value="Budget">Budget</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" style="font-size: 12px; text-transform: uppercase; color: var(--text-muted);">Fuel Type</label>
+                            <select id="editCarFuelType" name="fuelType" class="form-select" style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-glass); color: var(--text-main); border-radius: 10px;" required>
+                                <option value="Petrol">Petrol</option>
+                                <option value="Diesel">Diesel</option>
+                                <option value="Electric">Electric</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" style="font-size: 12px; text-transform: uppercase; color: var(--text-muted);">Transmission</label>
+                            <select id="editCarTransmission" name="transmission" class="form-select" style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-glass); color: var(--text-main); border-radius: 10px;" required>
+                                <option value="Automatic">Automatic</option>
+                                <option value="Manual">Manual</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" style="font-size: 12px; text-transform: uppercase; color: var(--text-muted);">Rate per Day (INR)</label>
+                            <input type="number" id="editCarPrice" name="pricePerDay" class="form-control" style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-glass); color: var(--text-main); border-radius: 10px;" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" style="font-size: 12px; text-transform: uppercase; color: var(--text-muted);">Availability</label>
+                            <select id="editCarAvailability" name="availability" class="form-select" style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-glass); color: var(--text-main); border-radius: 10px;" required>
+                                <option value="Available">Available</option>
+                                <option value="Unavailable">Unavailable</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer" style="border-top: 1px solid var(--border-glass);">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" style="border-radius: 10px;">Cancel</button>
+                <button type="button" class="btn btn-gold" onclick="submitCarUpdate()" style="background: linear-gradient(135deg, var(--accent-indigo), var(--accent-cyan)); border: none; color: #fff; border-radius: 10px; padding: 8px 20px;">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 </body>
 </html>
