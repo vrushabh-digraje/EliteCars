@@ -55,6 +55,7 @@ EliteCars/
             ├── images/         # Fleet images & display banners
             ├── js/             # Catalog fetching & logic scripting
             └── pages/          # Front-end dashboard pages (admin, owner, user)
+```
 
 ---
 
